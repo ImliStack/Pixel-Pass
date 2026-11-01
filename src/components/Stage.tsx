@@ -137,6 +137,7 @@ export function Scene({ heroX, heroY, pose, facing, coins, dust, debris, bubble,
               <PixelSprite grid={royal} palette={royalPalette} px={3} />
             </motion.div>
           )}
+          {finale.heart && <Fireworks key="fireworks" x={castleX + 24} />}
           {finale.heart && (
             <motion.div
               key="heart"
@@ -188,5 +189,33 @@ function Scenery() {
       <span className="bush bush--a"><PixelSprite grid={bush} palette={sceneryPalette} px={3} /></span>
       <span className="bush bush--b"><PixelSprite grid={bush} palette={sceneryPalette} px={2} /></span>
     </div>
+  );
+}
+
+// Three small pixel bursts over the castle: square sparks fly out, drift down and fade
+const BURSTS = [
+  { dx: -10, dy: -150, delay: 0, color: '#fcc93a' },
+  { dx: -70, dy: -120, delay: 0.35, color: '#1fa25c' },
+  { dx: 30, dy: -105, delay: 0.7, color: '#e5484d' },
+];
+function Fireworks({ x }: { x: number }) {
+  return (
+    <motion.div className="fireworks" style={{ left: x }} exit={{ opacity: 0 }} aria-hidden="true">
+      {BURSTS.map((b, i) =>
+        Array.from({ length: 10 }, (_, k) => {
+          const a = (k / 10) * Math.PI * 2;
+          return (
+            <motion.span
+              key={`${i}-${k}`}
+              className="spark"
+              style={{ left: b.dx, top: b.dy, background: b.color }}
+              initial={{ x: 0, y: 0, opacity: 0, scale: 0.6 }}
+              animate={{ x: Math.cos(a) * 34, y: [0, Math.sin(a) * 34, Math.sin(a) * 34 + 18], opacity: [0, 1, 0], scale: [0.6, 1, 0.5] }}
+              transition={{ duration: 1.1, delay: b.delay, ease: 'easeOut', repeat: 1, repeatDelay: 1.2 }}
+            />
+          );
+        }),
+      )}
+    </motion.div>
   );
 }

@@ -438,3 +438,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(31, 162, 92, 0.5
 .hud { display: flex; align-items: center; gap: 14px; }
 .coin-count { display: flex; align-items: center; gap: 6px; font-family: var(--font-pixel); font-size: 15px; font-weight: 700; color: var(--gold-ink); }
 .coin--icon { position: static; display: inline-block; width: 11px; height: 16px; }
+
+/* ---------- fireworks ---------- */
+.fireworks { position: absolute; bottom: 0; width: 0; height: 0; z-index: 0; pointer-events: none; }
+.spark { position: absolute; width: 5px; height: 5px; }

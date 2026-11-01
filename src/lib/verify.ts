@@ -1,6 +1,6 @@
 // Mock verification service. Replace with your API call.
 
-export const DEMO_CODE = '1985';
+export const DEMO_CODE = '1997';
 export const MASKED_PHONE = '•••• 4821';
 
 /** Whole-code check, like a real OTP API: right or wrong, never which digit. */

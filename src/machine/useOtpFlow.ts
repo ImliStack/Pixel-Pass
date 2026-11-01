@@ -226,6 +226,7 @@ export function useOtpFlow() {
     await wait(950, t);
     setFinale((f) => ({ ...f, heart: true }));
     sfx.heart();
+    [0, 350, 700].forEach((ms) => setTimeout(() => sfx.firework(), ms * speed.current));
     await wait(450, t);
     setFinale((f) => ({ ...f, toast: true }));
     dispatch({ type: 'FINALE' });

@@ -59,5 +59,6 @@ export const sfx = {
     ]),
   crumble: () => play([{ f: 180, d: 0.06, type: 'sawtooth', gain: 0.05 }, { f: 120, d: 0.08, type: 'sawtooth', gain: 0.05 }, { f: 90, d: 0.12, type: 'sawtooth', gain: 0.04 }]),
   flag: () => play([{ f: 1047, d: 0.6, slideTo: 330, type: 'triangle', gain: 0.05 }]),
+  firework: () => play([{ f: 900, d: 0.05, slideTo: 1800, type: 'triangle', gain: 0.03 }, { f: 220, d: 0.12, type: 'sawtooth', gain: 0.03 }]),
   heart: () => play([{ f: 1175, d: 0.08, type: 'triangle' }, { f: 1568, d: 0.2, type: 'triangle' }]),
 };

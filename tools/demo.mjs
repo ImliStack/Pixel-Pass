@@ -34,7 +34,6 @@ try {
     const context = await browser.newContext({ viewport: size, deviceScaleFactor: run.scale, isMobile: run.isMobile, hasTouch: run.isMobile });
     const page = await context.newPage();
     // phone run: reserve the iPhone status-bar / Dynamic Island area so the framed video looks real
-    if (run.isMobile) await page.addInitScript(() => document.documentElement.style.setProperty('--demo-safe-top', '47px'));
 
     // Chrome's own screencast (CDP) instead of Playwright recordVideo: no extra ffmpeg download, and full-DPR frames.
     const frameDir = path.join(out, `${run.name}-frames`);
@@ -52,6 +51,7 @@ try {
     const type = async (text) => { for (const ch of text) { await page.keyboard.type(ch); await page.waitForTimeout(260); } };
 
     await page.goto(base);
+    if (run.isMobile) await page.addStyleTag({ content: ':root { --demo-safe-top: 47px; }' });
     await page.waitForSelector('.slot');
     await page.evaluate(() => document.fonts.ready);
     await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 90, maxWidth: size.width * run.scale, maxHeight: size.height * run.scale });
@@ -67,7 +67,7 @@ try {
     await shot('retry');
 
     await page.waitForTimeout(600);
-    await type('1985');
+    await type('1997');
     await page.waitForSelector('.check-block', { timeout: 10000 });
     await page.waitForTimeout(300);
     await shot('merge');
@@ -92,8 +92,8 @@ try {
   // Screenshot-only pass: spend all three lives (Skip fast-forwards each check) to capture Game over
   const context = await browser.newContext({ viewport: runs[1].viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const page = await context.newPage();
-  await page.addInitScript(() => document.documentElement.style.setProperty('--demo-safe-top', '47px'));
   await page.goto(base);
+  await page.addStyleTag({ content: ':root { --demo-safe-top: 47px; }' });
   await page.waitForSelector('.slot');
   await page.click('.slots-row');
   for (const [i, code] of ['1234', '2222', '3333'].entries()) {
