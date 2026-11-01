@@ -15,6 +15,7 @@ Reference frames from the source video live in `docs/reference/` locally (git-ig
 | 3 | `failed` | Title → **So close!** / *Greens are right and stay locked. Retype the red ones.* Hero speech bubble: **Three are off!** *Fix ② ③ and ④*. Red slots fade to empty, cursor jumps to first red slot, resend timer returns. |
 | 4 | `checking` (retry) | Only the retyped slots are re-checked; locked greens are skipped. |
 | 5 | `merging` | All green → slots slide together into one gold `?` block, hero jumps and bumps it, it turns green. |
+| — | `gameover` | *(added)* After `MAX_LIVES` (3) failed checks: *Game over*, slots cleared, **Continue** resets with a fresh code. |
 | 6 | `verified` | Block morphs into a big green ✓ with a pulse ring and a coin burst. Title **Verified** / *You're in.* Castle slides in, princess walks out, heart pops, toast types out a message by attempt count: **Perfect run!** / **Level clear!** / **Persistence pays!** (the video's own toast text is not reused). |
 
 ## Layers
@@ -36,9 +37,10 @@ src/
 ### State (single source of truth)
 
 ```ts
-phase: 'input' | 'checking' | 'failed' | 'merging' | 'verified'
+phase: 'input' | 'checking' | 'failed' | 'merging' | 'verified' | 'gameover'
 slots: { digit: string; status: 'empty'|'filled'|'pending'|'correct'|'wrong' }[4]
 attempts: number
+lives: number             // MAX_LIVES = 3; 0 → gameover
 resendIn: number          // seconds
 bubble: number[] | null   // 1-based indexes to fix
 ```

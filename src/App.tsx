@@ -1,15 +1,22 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { Credit, Footer, Header, Heading, Toast } from './components/Chrome';
+import { Credit, Footer, Header, Heading, Lives, Toast, pickToast } from './components/Chrome';
 import { OtpSlots } from './components/OtpSlots';
 import { Scene } from './components/Stage';
 import { setMuted } from './lib/sound';
-import { CODE_LENGTH, canType } from './machine/otpMachine';
+import { CODE_LENGTH, MAX_LIVES, canType } from './machine/otpMachine';
 import { useOtpFlow } from './machine/useOtpFlow';
 
 export default function App() {
-  const { state, input, reset, refs, scene } = useOtpFlow();
+  const { state, input, reset, continueGame, skip, announce, refs, scene } = useOtpFlow();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
+  // Toast line is picked once per win, so re-renders don't reshuffle it
+  const [toastCopy, setToastCopy] = useState<[string, string] | null>(null);
+  useEffect(() => {
+    setToastCopy(scene.finale.toast ? pickToast(state.attempts) : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene.finale.toast]);
   const [muted, setMutedState] = useState(false);
   const [stageWidth, setStageWidth] = useState(390);
   // Remember the slots flagged on the last failure so empty retry slots keep a red hint
@@ -34,11 +41,13 @@ export default function App() {
   }, [state.phase]);
 
   const verified = state.phase === 'verified';
+  const liveText = toastCopy ? `Verified. ${toastCopy[0]} ${toastCopy[1]}` : announce;
 
   return (
     <div className="device" onClick={focus}>
       <Header
         muted={muted}
+        lives={!verified && <Lives lives={state.lives} max={MAX_LIVES} />}
         onClose={reset}
         onToggleSound={() => {
           setMuted(!muted);
@@ -66,7 +75,14 @@ export default function App() {
           e.preventDefault();
           input.paste(e.clipboardData.getData('text'));
         }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       />
+
+      {/* Screen-reader narration of the check, result, lives and finale */}
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {liveText}
+      </p>
 
       <motion.main
         className="content"
@@ -84,6 +100,7 @@ export default function App() {
             mergeStep={scene.mergeStep}
             mergeBump={scene.mergeBump}
             slotRefs={refs.slotRefs}
+            focused={focused && canType(state.phase)}
             onFocus={focus}
           />
           <Scene
@@ -92,16 +109,16 @@ export default function App() {
             pose={scene.pose}
             facing={scene.facing}
             coins={scene.coins}
+            dust={scene.dust}
             bubble={state.bubble}
-            bubbleX={scene.bubbleX}
             finale={scene.finale}
             stageWidth={stageWidth}
           />
         </div>
 
-        <Footer phase={state.phase} resendIn={state.resendIn} onResend={input.resend} />
+        <Footer phase={state.phase} resendIn={state.resendIn} onResend={input.resend} onSkip={skip} onContinue={continueGame} />
 
-        <AnimatePresence>{scene.finale.toast && <Toast attempts={state.attempts} />}</AnimatePresence>
+        <AnimatePresence>{toastCopy && <Toast copy={toastCopy} />}</AnimatePresence>
       </motion.main>
 
       <Credit />

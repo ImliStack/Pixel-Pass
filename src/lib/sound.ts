@@ -52,5 +52,10 @@ export const sfx = {
       { f: 523, d: 0.1 }, { f: 659, d: 0.1 }, { f: 784, d: 0.1 },
       { f: 1047, d: 0.18 }, { f: 784, d: 0.08 }, { f: 1047, d: 0.3 },
     ]),
+  gameOver: () =>
+    play([
+      { f: 494, d: 0.14 }, { f: 466, d: 0.14 }, { f: 440, d: 0.14 },
+      { f: 415, d: 0.18 }, { f: 330, d: 0.12, type: 'triangle' }, { f: 165, d: 0.4, type: 'triangle' },
+    ]),
   heart: () => play([{ f: 1175, d: 0.08, type: 'triangle' }, { f: 1568, d: 0.2, type: 'triangle' }]),
 };

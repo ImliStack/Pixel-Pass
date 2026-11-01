@@ -1,5 +1,13 @@
 @import './tokens.css';
 
+/* Geist Pixel Square by Vercel × basement.studio, SIL OFL 1.1 (see assets/fonts/GeistPixel-LICENSE.txt) */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('../assets/fonts/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
 

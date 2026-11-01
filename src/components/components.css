@@ -79,6 +79,7 @@
   font-weight: 800;
   font-size: 24px;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .slot--active { border-color: #d6cfc1; }
 .cursor {
@@ -124,7 +125,7 @@
   box-shadow: 0 4px 0 var(--red-600), var(--shadow-soft);
   color: var(--red-600);
 }
-.slot--q .q { font-family: var(--font-pixel); font-size: 20px; color: #fff; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25); }
+.slot--q .q { font-family: var(--font-pixel); font-size: 30px; color: #fff; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25); }
 .slot--q.slot--correct { background: linear-gradient(180deg, #4fe39a, var(--green-500)); }
 
 /* ---------- sky / sprites ---------- */
@@ -180,10 +181,10 @@
 }
 .bubble strong {
   display: block;
-  font-family: var(--font-display);
-  font-stretch: 115%;
-  font-weight: 800;
+  font-family: var(--font-pixel);
+  font-weight: 700;
   font-size: 15px;
+  letter-spacing: 0.01em;
 }
 .bubble-fix { font-size: 12.5px; color: var(--muted); }
 .chip-red {
@@ -236,8 +237,8 @@
   background: #fff;
   border: 1.5px solid var(--line);
 }
-.chip-mono { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--faint); background: #f8f6f1; }
-.chip-gold { font-weight: 800; color: var(--gold-ink); font-size: 13.5px; }
+.chip-mono { font-family: var(--font-pixel); font-weight: 700; font-size: 13.5px; color: var(--faint); background: #f8f6f1; }
+.chip-gold { font-family: var(--font-pixel); font-weight: 700; color: var(--gold-ink); font-size: 14px; letter-spacing: 0.04em; }
 .demo { color: var(--faint); font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
 .link { color: var(--green-600); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
@@ -265,10 +266,9 @@
 }
 .toast strong {
   display: block;
-  font-family: var(--font-display);
-  font-stretch: 120%;
-  font-weight: 850;
-  font-size: 16px;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 17px;
   min-height: 20px;
 }
 .toast span { display: block; color: var(--muted); font-size: 13.5px; min-height: 18px; margin-top: 2px; }
@@ -315,3 +315,70 @@
   .toast { width: min(460px, calc(100% - 36px)); }
   .check-wrap { transform: scale(1.15); }
 }
+
+/* ---------- feedback: shake, dust ---------- */
+.shaker { width: 100%; height: 100%; }
+.shaker--on { animation: shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+.shaker--on .slot--wrong { animation: flash-red 0.6s ease-out; }
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-5px); }
+  40%, 60% { transform: translateX(5px); }
+}
+@keyframes flash-red {
+  0% { box-shadow: 0 4px 0 var(--red-600), 0 0 0 0 rgba(217, 56, 56, 0.55); }
+  100% { box-shadow: 0 4px 0 var(--red-600), 0 0 0 14px rgba(217, 56, 56, 0); }
+}
+.dust {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  height: 6px;
+  background: #d8cdb8;
+  box-shadow: 6px -3px 0 -1px #e4dccb;
+  z-index: 2;
+}
+
+/* ---------- lives ---------- */
+.lives { display: flex; align-items: center; gap: 6px; }
+.life { display: block; line-height: 0; }
+.life svg { display: block; }
+
+/* ---------- skip / continue ---------- */
+.skip {
+  margin-left: 6px;
+  padding: 3px 9px;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--muted);
+  background: #fff;
+  border: 1.5px solid var(--line);
+}
+.skip:hover { color: var(--ink); }
+.pixel-btn {
+  padding: 11px 22px 12px;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  background: linear-gradient(180deg, #4fe39a, var(--green-500));
+  border: 2.5px solid var(--green-700);
+  border-radius: 10px;
+  box-shadow: 0 4px 0 var(--green-700);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pixel-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--green-700); }
+
+/* ---------- accessibility ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.slots-row--focused .slot--active { outline: 3px solid rgba(31, 162, 92, 0.35); outline-offset: 3px; }
+button:focus-visible, a:focus-visible { outline: 3px solid rgba(31, 162, 92, 0.55); outline-offset: 2px; }

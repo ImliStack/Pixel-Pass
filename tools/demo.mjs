@@ -86,6 +86,23 @@ try {
     fs.rmSync(list);
     results.push({ run: run.name, mp4, frames: frames.length });
   }
+
+  // Screenshot-only pass: spend all three lives (Skip fast-forwards each check) to capture Game over
+  const context = await browser.newContext({ viewport: runs[1].viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  await page.goto(base);
+  await page.waitForSelector('.slot');
+  await page.click('.slots-row');
+  for (const [i, code] of ['1234', '222', '333'].entries()) {
+    await page.keyboard.type(code);
+    await page.click('.skip');
+    await page.waitForFunction((n) => document.querySelectorAll('.life--lost').length === n, i + 1, { timeout: 8000 });
+    await page.waitForTimeout(300);
+  }
+  await page.waitForSelector('.pixel-btn');
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: path.join(shots, 'mobile-gameover.jpg'), type: 'jpeg', quality: 88 });
+  await context.close();
 } finally {
   await browser.close();
   vite.kill();

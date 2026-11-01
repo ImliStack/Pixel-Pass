@@ -1,11 +1,15 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Phase } from '../machine/otpMachine';
 import { DEMO_CODE, MASKED_PHONE } from '../lib/verify';
 import { PixelSprite } from '../sprites/PixelSprite';
-import { royal, royalPalette } from '../sprites/data';
+import { heart, heartPalette, royal, royalPalette } from '../sprites/data';
 
-export function Header({ muted, onClose, onToggleSound }: { muted: boolean; onClose: () => void; onToggleSound: () => void }) {
+const lostHeartPalette = { R: '#d9d2c4', W: '#ebe5d9' };
+
+type HeaderProps = { muted: boolean; lives?: ReactNode; onClose: () => void; onToggleSound: () => void };
+
+export function Header({ muted, lives, onClose, onToggleSound }: HeaderProps) {
   return (
     <header className="topbar">
       <button className="icon-btn" onClick={onClose} aria-label="Close">
@@ -13,6 +17,7 @@ export function Header({ muted, onClose, onToggleSound }: { muted: boolean; onCl
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
+      {lives}
       <button className="icon-btn" onClick={onToggleSound} aria-label={muted ? 'Unmute' : 'Mute'}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M4 9h3.5L12 5v14l-4.5-4H4z" />
@@ -48,12 +53,32 @@ export function Credit() {
   );
 }
 
+/** Pixel hearts: one per remaining wrong attempt. */
+export function Lives({ lives, max }: { lives: number; max: number }) {
+  return (
+    <div className="lives" role="img" aria-label={`${lives} of ${max} lives left`}>
+      {Array.from({ length: max }, (_, i) => (
+        <motion.span
+          key={i}
+          className={i < lives ? 'life' : 'life life--lost'}
+          animate={i < lives ? { scale: 1 } : { scale: [1, 1.5, 0.9, 1], rotate: [0, -12, 8, 0] }}
+          transition={{ duration: 0.45 }}
+        >
+          <PixelSprite grid={heart} palette={i < lives ? heartPalette : lostHeartPalette} px={3} />
+        </motion.span>
+      ))}
+    </div>
+  );
+}
+
 export function Heading({ phase, attempts }: { phase: Phase; attempts: number }) {
-  const variant = phase === 'verified' ? 'ok' : phase === 'failed' || attempts > 1 ? 'close' : 'start';
+  const variant =
+    phase === 'verified' ? 'ok' : phase === 'gameover' ? 'over' : phase === 'failed' || attempts > 1 ? 'close' : 'start';
   const copy = {
     start: { title: 'Let’s verify your number', sub: [`We sent a 4-digit code to ${MASKED_PHONE}.`, 'It verifies on its own once entered.'] },
     close: { title: 'So close!', sub: ['Greens are right and stay locked.', 'Retype the red ones.'] },
     ok: { title: 'Verified', sub: ['You’re in.'] },
+    over: { title: 'Game over', sub: ['Out of lives, so that code expired.', 'We’ve sent you a fresh one.'] },
   }[variant];
 
   return (
@@ -77,17 +102,36 @@ export function Heading({ phase, attempts }: { phase: Phase; attempts: number })
   );
 }
 
-export function Footer({ phase, resendIn, onResend }: { phase: Phase; resendIn: number; onResend: () => void }) {
+type FooterProps = { phase: Phase; resendIn: number; onResend: () => void; onSkip: () => void; onContinue: () => void };
+
+export function Footer({ phase, resendIn, onResend, onSkip, onContinue }: FooterProps) {
   if (phase === 'verified') return null;
   const busy = phase === 'checking' || phase === 'merging';
+  if (phase === 'gameover') {
+    return (
+      <div className="footer">
+        <button className="pixel-btn" onClick={onContinue} autoFocus>
+          Continue ▸
+        </button>
+        <div className="demo">
+          Demo code <span className="chip chip-gold">{DEMO_CODE}</span>
+        </div>
+      </div>
+    );
+  }
   const mm = `0:${String(resendIn).padStart(2, '0')}`;
   return (
     <div className="footer">
       <div className="footer-line">
         {busy ? (
-          <span className="checking">
-            Checking <Dots />
-          </span>
+          <>
+            <span className="checking">
+              Checking <Dots />
+            </span>
+            <button className="skip" onClick={onSkip} aria-label="Skip the animation">
+              Skip ▸▸
+            </button>
+          </>
         ) : resendIn > 0 ? (
           <>
             Didn’t get it? Resend in <span className="chip chip-mono">{mm}</span>
@@ -118,15 +162,37 @@ function Dots() {
   );
 }
 
-// Success toast copy, by number of attempts
-const TOAST_COPY: [string, string][] = [
-  ['Perfect run!', 'First try, every block right.'],
-  ['Level clear!', 'One retry, and you’re in.'],
-  ['Persistence pays!', 'A few tries, but you made it.'],
+// Success toast copy: one pool per tier (first try / one retry / more), picked at random
+const TOAST_COPY: [string, string][][] = [
+  [
+    ['Perfect run!', 'First try, every block right.'],
+    ['Flawless!', 'Four for four on the first jump.'],
+    ['Speedrun!', 'No retries. Code accepted.'],
+  ],
+  [
+    ['Level clear!', 'One retry, and you’re in.'],
+    ['Extra life used!', 'Still cleared the level.'],
+    ['Nice recovery!', 'Fixed it in one go. You’re in.'],
+  ],
+  [
+    ['Persistence pays!', 'A few tries, but you made it.'],
+    ['Never game over!', 'Kept jumping. Code accepted.'],
+    ['Worth the climb!', 'All four blocks are green.'],
+  ],
 ];
+let lastToast = '';
 
-export function Toast({ attempts }: { attempts: number }) {
-  const [title, sub] = TOAST_COPY[Math.min(Math.max(attempts, 1), TOAST_COPY.length) - 1];
+/** Random line for this tier, never the same as the previous toast. */
+export function pickToast(attempts: number): [string, string] {
+  const pool = TOAST_COPY[Math.min(Math.max(attempts, 1), TOAST_COPY.length) - 1];
+  const options = pool.filter(([t]) => t !== lastToast);
+  const pick = options[Math.floor(Math.random() * options.length)];
+  lastToast = pick[0];
+  return pick;
+}
+
+export function Toast({ copy }: { copy: [string, string] }) {
+  const [title, sub] = copy;
   const t = useTypewriter(title, 0);
   const s = useTypewriter(sub, title.length * 35 + 150);
   return (
@@ -135,7 +201,7 @@ export function Toast({ attempts }: { attempts: number }) {
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-      role="status"
+      aria-hidden="true" // typed out letter by letter; the live region reads the full line
     >
       <div className="toast-avatar">
         <PixelSprite grid={royal} palette={royalPalette} px={3} rows={11} />

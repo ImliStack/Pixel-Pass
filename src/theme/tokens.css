@@ -31,10 +31,10 @@
   --check-edge: #0d8a46;
 
   /* type */
-  --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
+  --font-display: 'Archivo Variable', 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', -apple-system, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --font-pixel: 'Press Start 2P', monospace;
+  --font-pixel: 'Geist Pixel', 'JetBrains Mono', monospace; /* game text only: chips, bubble, toast, ? block */
 
   /* shape */
   --slot: 60px;

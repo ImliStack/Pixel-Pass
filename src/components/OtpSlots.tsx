@@ -13,10 +13,11 @@ type Props = {
   mergeStep: MergeStep;
   mergeBump: number;
   slotRefs: MutableRefObject<(HTMLDivElement | null)[]>;
+  focused: boolean; // hidden input has focus → show a ring on the active slot
   onFocus: () => void;
 };
 
-export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slotRefs, onFocus }: Props) {
+export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slotRefs, focused, onFocus }: Props) {
   const active = canType(phase) ? activeIndex(slots) : -1;
 
   if (phase === 'verified') {
@@ -49,7 +50,8 @@ export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slo
   const step = a && b ? b.offsetLeft - a.offsetLeft : 72;
 
   return (
-    <div className="slots-row" onClick={onFocus} role="group" aria-label="Verification code">
+    // Visual only: screen readers get the hidden input plus the live announcements
+    <div className={`slots-row${focused ? ' slots-row--focused' : ''}`} onClick={onFocus} aria-hidden="true">
       {slots.map((s, i) => {
         const retryHint = phase === 'failed' && s.status === 'empty' && retry?.includes(i + 1);
         const cls = [
@@ -70,6 +72,8 @@ export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slo
             }
             transition={{ duration: 0.34, ease: 'easeInOut' }}
           >
+            {/* wrong digits shake once and flash red (CSS), separate from the bump transform */}
+            <div className={s.status === 'wrong' ? 'shaker shaker--on' : 'shaker'}>
             <motion.div
               key={bumps[i]}
               className={cls}
@@ -95,6 +99,7 @@ export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slo
               </AnimatePresence>
               {s.status === 'pending' && <Rivets />}
             </motion.div>
+            </div>
           </motion.div>
         );
       })}

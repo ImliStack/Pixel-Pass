@@ -1,9 +1,14 @@
-import { AnimatePresence, motion, type MotionValue } from 'framer-motion';
+import { AnimatePresence, motion, useTransform, type MotionValue } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { PixelSprite } from '../sprites/PixelSprite';
 import { castle, castlePalette, heart, heartPalette, hero, heroPalette, royal, royalPalette } from '../sprites/data';
-import type { CoinFx, Pose } from '../machine/useOtpFlow';
+import type { CoinFx, DustFx, Pose } from '../machine/useOtpFlow';
 import { HERO_H, HERO_W, SKY_H } from '../machine/useOtpFlow';
 import { bubbleTitle } from '../machine/otpMachine';
+
+const BUBBLE_W = 190;
+// Idle blink: the standing frame with the eye pixels painted over in skin colour
+const heroBlink = hero.stand.map((row) => row.replace(/K/g, 'S'));
 
 type Props = {
   heroX: MotionValue<number>;
@@ -11,14 +16,17 @@ type Props = {
   pose: Pose;
   facing: 1 | -1;
   coins: CoinFx[];
+  dust: DustFx[];
   bubble: number[] | null;
-  bubbleX: number;
   finale: { castle: boolean; royal: boolean; heart: boolean };
   stageWidth: number;
 };
 
 /** The sky between the slots and the ground, plus the ground itself. */
-export function Scene({ heroX, heroY, pose, facing, coins, bubble, bubbleX, finale, stageWidth }: Props) {
+export function Scene({ heroX, heroY, pose, facing, coins, dust, bubble, finale, stageWidth }: Props) {
+  // The speech bubble rides above the hero, clamped inside the stage
+  const bubbleX = useTransform(heroX, (x) => Math.max(10, Math.min(stageWidth - BUBBLE_W - 10, x + HERO_W - BUBBLE_W + 14)));
+  const blinking = useBlink(pose === 'stand');
   const center = stageWidth / 2;
   // Castle sits at the right edge on phones, but stays near the action on wide screens
   const castleX = center + Math.min(stageWidth / 2 - 62, 190);
@@ -40,7 +48,7 @@ export function Scene({ heroX, heroY, pose, facing, coins, bubble, bubbleX, fina
           {bubble && bubble.length > 0 && (
             <motion.div
               className="bubble"
-              style={{ left: bubbleX }}
+              style={{ left: bubbleX, width: BUBBLE_W }}
               initial={{ opacity: 0, y: 8, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 6 }}
@@ -61,8 +69,21 @@ export function Scene({ heroX, heroY, pose, facing, coins, bubble, bubbleX, fina
         </AnimatePresence>
 
         <motion.div className="hero" style={{ x: heroX, y: heroY, width: HERO_W, height: HERO_H }}>
-          <PixelSprite grid={hero[pose]} palette={heroPalette} px={3} flip={facing < 0} />
+          <PixelSprite grid={blinking ? heroBlink : hero[pose]} palette={heroPalette} px={3} flip={facing < 0} />
         </motion.div>
+
+        {dust.map((d) =>
+          [-1, 1].map((dir) => (
+            <motion.span
+              key={`${d.id}${dir}`}
+              className="dust"
+              style={{ left: d.x - 3 }}
+              initial={{ x: 0, y: 0, opacity: 0.9, scale: 1 }}
+              animate={{ x: dir * 16, y: -6, opacity: 0, scale: 0.4 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+          )),
+        )}
 
         <AnimatePresence>
           {finale.castle && (
@@ -105,4 +126,25 @@ export function Scene({ heroX, heroY, pose, facing, coins, bubble, bubbleX, fina
       <div className="ground" />
     </>
   );
+}
+
+/** Blink every few seconds while the hero stands still. */
+function useBlink(enabled: boolean) {
+  const [blink, setBlink] = useState(false);
+  useEffect(() => {
+    if (!enabled) return setBlink(false);
+    let to: ReturnType<typeof setTimeout>;
+    const loop = () => {
+      to = setTimeout(() => {
+        setBlink(true);
+        to = setTimeout(() => {
+          setBlink(false);
+          loop();
+        }, 130);
+      }, 2200 + Math.random() * 2200);
+    };
+    loop();
+    return () => clearTimeout(to);
+  }, [enabled]);
+  return blink;
 }

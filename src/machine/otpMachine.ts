@@ -2,15 +2,18 @@
 
 export const CODE_LENGTH = 4;
 export const RESEND_SECONDS = 30;
+/** Wrong attempts allowed before a new code is forced. Doubles as the rate limit for per-digit feedback. */
+export const MAX_LIVES = 3;
 
 export type SlotStatus = 'empty' | 'filled' | 'pending' | 'correct' | 'wrong';
 export type Slot = { digit: string; status: SlotStatus };
-export type Phase = 'input' | 'checking' | 'failed' | 'merging' | 'verified';
+export type Phase = 'input' | 'checking' | 'failed' | 'merging' | 'verified' | 'gameover';
 
 export type OtpState = {
   phase: Phase;
   slots: Slot[];
   attempts: number;
+  lives: number;
   resendIn: number;
   bubble: number[] | null; // 1-based slot numbers to fix
   showFinale: boolean;
@@ -29,6 +32,7 @@ export type OtpEvent =
   | { type: 'FINALE' }
   | { type: 'TICK' }
   | { type: 'RESEND' }
+  | { type: 'CONTINUE' } // after game over: fresh code, full lives
   | { type: 'RESET' };
 
 const emptySlots = (): Slot[] => Array.from({ length: CODE_LENGTH }, () => ({ digit: '', status: 'empty' }));
@@ -37,6 +41,7 @@ export const initialState: OtpState = {
   phase: 'input',
   slots: emptySlots(),
   attempts: 0,
+  lives: MAX_LIVES,
   resendIn: RESEND_SECONDS,
   bubble: null,
   showFinale: false,
@@ -105,9 +110,13 @@ export function otpReducer(state: OtpState, ev: OtpEvent): OtpState {
 
     case 'CHECK_FAILED': {
       const wrong = state.slots.map((s, i) => (s.status === 'wrong' ? i + 1 : -1)).filter((i) => i > 0);
+      const lives = state.lives - 1;
+      // Out of lives: the old code is void, so even the greens are cleared
+      if (lives <= 0) return { ...state, phase: 'gameover', lives: 0, bubble: null, slots: emptySlots() };
       return {
         ...state,
         phase: 'failed',
+        lives,
         bubble: wrong,
         slots: state.slots.map((s) => (s.status === 'wrong' ? { digit: '', status: 'empty' } : s)),
       };
@@ -127,6 +136,9 @@ export function otpReducer(state: OtpState, ev: OtpEvent): OtpState {
 
     case 'RESEND':
       return { ...state, resendIn: RESEND_SECONDS };
+
+    case 'CONTINUE':
+      return { ...initialState, slots: emptySlots(), resendIn: RESEND_SECONDS };
 
     case 'RESET':
       return { ...initialState, slots: emptySlots() };
