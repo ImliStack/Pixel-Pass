@@ -1,4 +1,4 @@
-// Put the phone recording and phone screenshots inside an iPhone-style frame (drawn here, no Apple assets).
+// Put the phone screenshots inside an iPhone-style frame (drawn here, no Apple assets).
 // Usage: npm run frame   (after npm run demo; needs Google Chrome and ffmpeg)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,11 +35,7 @@ const canvas = `color=c=0xece6da:s=${W + 12 + PAD * 2}x${H + PAD * 2}`;
 // screen sits inside the bezel; the frame PNG is laid on top so the rounded corners hide the video edges
 const layout = `[1:v]scale=${SCREEN.w}:${SCREEN.h}[s];[0:v][s]overlay=${PAD + 6 + BEZEL}:${PAD + BEZEL}[a];[a][2:v]overlay=${PAD}:${PAD}`;
 
-// 2. Video: MP4 for the repo + GIF for the README
-ffmpeg('-f', 'lavfi', '-i', canvas, '-i', 'docs/demo-mobile.mp4', '-loop', '1', '-i', framePng, '-filter_complex', `${layout.replace('[a];', ':shortest=1[a];')}:shortest=1,format=yuv420p`, '-c:v', 'libx264', '-crf', '22', '-preset', 'slow', '-movflags', '+faststart', '-shortest', 'docs/demo-iphone.mp4');
-ffmpeg('-i', 'docs/demo-iphone.mp4', '-vf', 'fps=12,scale=380:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=112:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle', 'docs/demo-iphone.gif');
-
-// 3. Framed phone screenshots
+// 2. Framed phone screenshots
 fs.mkdirSync('docs/screenshots/iphone', { recursive: true });
 for (const f of fs.readdirSync('docs/screenshots').filter((n) => n.startsWith('mobile-') && n.endsWith('.jpg'))) {
   const name = f.replace('mobile-', '').replace('.jpg', '.png');

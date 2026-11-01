@@ -113,8 +113,6 @@ try {
 
 // README assets: full desktop MP4, mobile MP4 and a mobile GIF (the original reference was a phone recording).
 fs.copyFileSync(path.join(out, 'desktop.mp4'), 'docs/demo.mp4');
-fs.copyFileSync(path.join(out, 'mobile.mp4'), 'docs/demo-mobile.mp4');
-ffmpeg('-i', path.join(out, 'mobile.mp4'), '-vf', 'fps=12,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle', 'docs/demo.gif');
 ffmpeg('-i', path.join(out, 'desktop.mp4'), '-vf', 'fps=12,scale=720:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle', 'docs/demo-desktop.gif');
 // Social preview: desktop verified shot cropped to 1200×630
 ffmpeg('-i', path.join(shots, 'desktop-verified.jpg'), '-vf', 'scale=1200:-1,crop=1200:630:0:(ih-630)/2-40', '-q:v', '3', 'public/og.jpg');

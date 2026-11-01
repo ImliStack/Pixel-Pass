@@ -36,22 +36,22 @@ code again, like any real OTP. Three wrong codes and it's game over: a fresh cod
 <div align="center">
 <table>
   <tr>
-    <td width="38%" align="center"><img src="docs/demo.gif" alt="Pixel Pass on a phone: wrong code 1234, blocks turn red and shatter, full retype 1997, flag slide, castle and fireworks" width="100%" /></td>
+    <td width="38%" align="center"><img src="docs/demo-iphone-real.gif" alt="Real iPhone screen recording of Pixel Pass: two wrong codes, bricks shatter, full retype of 1997, flag slide, castle, fireworks and toast" width="100%" /></td>
     <td width="62%" align="center"><img src="docs/demo-desktop.gif" alt="Pixel Pass full-page on desktop: the same flow from wrong code to verified" width="100%" /></td>
   </tr>
   <tr>
-    <td align="center"><sub><b>Phone</b> · 17 s · <a href="docs/demo-mobile.mp4">MP4</a></sub></td>
+    <td align="center"><sub><b>Real iPhone</b> · 31 s · <a href="docs/demo-iphone-real.mp4">MP4</a></sub></td>
     <td align="center"><sub><b>Desktop</b> · 19 s · <a href="docs/demo.mp4">MP4</a></sub></td>
   </tr>
 </table>
-<sub>Recorded with <code>npm run demo</code> (framed with <code>npm run frame</code>): wrong code <code>1234</code> → bricks shatter → retype <code>1997</code> → verified</sub>
+<sub>Left: recorded on an iPhone at <a href="https://pixel-pass.imlistack.workers.dev">pixel-pass.imlistack.workers.dev</a>. Right: <code>npm run demo</code> on desktop: wrong code <code>1234</code> → bricks shatter → retype <code>1997</code> → verified</sub>
 </div>
 
 ## ✦ On iPhone
 
 <div align="center">
-<img src="docs/demo-iphone.gif" alt="Pixel Pass inside an iPhone frame: wrong code, bricks shatter, full retype, flag slide and castle finale" width="320" />
-<br /><sub><a href="docs/demo-iphone.mp4">iPhone-frame MP4</a></sub>
+<img src="docs/demo-iphone-real.gif" alt="Real iPhone screen recording: wrong codes, bricks shatter, game flow to verified with fireworks" width="320" />
+<br /><sub>Screen-recorded on a real iPhone, live site, keyboard and all · <a href="docs/demo-iphone-real.mp4">MP4</a></sub>
 <br /><br />
 <img src="docs/screenshots/iphone/idle.png" width="24%" alt="Enter your code" />
 <img src="docs/screenshots/iphone/retry.png" width="24%" alt="Not quite: wrong code" />
