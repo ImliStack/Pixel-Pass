@@ -1,0 +1,9 @@
+node_modules/
+dist/
+outputs/
+.wrangler/
+.DS_Store
+.claude/
+*.tsbuildinfo
+# Frames from the third-party reference video: kept locally, not published
+docs/reference/

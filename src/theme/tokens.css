@@ -1,0 +1,46 @@
+/* Design tokens — mirror these names in Flutter ThemeExtension */
+:root {
+  /* surface */
+  --paper: #f3efe7;
+  --paper-dot: #ddd6c8;
+  --card: #fbfaf7;
+  --ink: #17161b;
+  --muted: #6e6a63;
+  --faint: #a29d94;
+  --line: #e6e0d4;
+  --ledge: #e2dbcd;
+
+  /* states */
+  --green-50: #e9f8ef;
+  --green-500: #1fa25c;
+  --green-600: #158249;
+  --green-700: #0f6c3c;
+  --red-50: #fdeeee;
+  --red-100: #f9d6d6;
+  --red-500: #d93838;
+  --red-600: #b82828;
+  --gold-300: #ffdc5c;
+  --gold-400: #fcc93a;
+  --gold-500: #f0b31c;
+  --gold-700: #c27f00;
+  --gold-ink: #a3650a;
+
+  /* check block */
+  --check-top: #33d983;
+  --check-bottom: #14a85a;
+  --check-edge: #0d8a46;
+
+  /* type */
+  --font-display: 'Archivo', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+
+  /* shape */
+  --slot: 60px;
+  --slot-gap: 12px;
+  --radius-slot: 16px;
+  --radius-chip: 8px;
+  --shadow-soft: 0 6px 16px rgba(40, 30, 10, 0.06);
+  --shadow-btn: 0 4px 12px rgba(40, 30, 10, 0.1);
+}

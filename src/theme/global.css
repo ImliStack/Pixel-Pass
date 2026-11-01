@@ -1,0 +1,40 @@
+@import './tokens.css';
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+/* Full-page app shell: dotted paper fills the whole browser at every size */
+.device {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background-color: var(--paper);
+  background-image: radial-gradient(var(--paper-dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --slot: 72px;
+    --slot-gap: 16px;
+    --radius-slot: 18px;
+  }
+}
+
+.pixelated { image-rendering: pixelated; shape-rendering: crispEdges; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
