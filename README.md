@@ -47,6 +47,20 @@ cheers you on: *"Level clear! One retry, and you're in."*
 <sub>Recorded with <code>npm run demo</code>: wrong code <code>1234</code> → "Three are off!" → retype <code>985</code> → verified</sub>
 </div>
 
+## ✦ On iPhone
+
+<div align="center">
+<img src="docs/demo-iphone.gif" alt="Pixel Pass inside an iPhone frame: wrong code, bricks shatter, full retype, flag slide and castle finale" width="320" />
+<br /><sub><a href="docs/demo-iphone.mp4">iPhone-frame MP4</a></sub>
+<br /><br />
+<img src="docs/screenshots/iphone/idle.png" width="24%" alt="Enter your code" />
+<img src="docs/screenshots/iphone/retry.png" width="24%" alt="Not quite: wrong code" />
+<img src="docs/screenshots/iphone/gameover.png" width="24%" alt="Game over" />
+<img src="docs/screenshots/iphone/verified.png" width="24%" alt="Verified with flag and castle" />
+</div>
+
+> **Flow update:** the code is checked as a whole, like a real OTP. A wrong code shatters all four blocks and you retype everything; 3 wrong codes = game over and a fresh code. New: scenery, brick debris, a finish flag and a coin counter.
+
 ## ✦ The flow
 
 <table>

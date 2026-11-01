@@ -15,7 +15,7 @@ export type OtpState = {
   attempts: number;
   lives: number;
   resendIn: number;
-  bubble: number[] | null; // 1-based slot numbers to fix
+  bubble: boolean; // "Wrong code" speech bubble after a failed check
   showFinale: boolean;
 };
 
@@ -43,19 +43,15 @@ export const initialState: OtpState = {
   attempts: 0,
   lives: MAX_LIVES,
   resendIn: RESEND_SECONDS,
-  bubble: null,
+  bubble: false,
   showFinale: false,
 };
 
-export const isLocked = (s: Slot) => s.status === 'correct';
 export const canType = (phase: Phase) => phase === 'input' || phase === 'failed';
 
 /** Index of the slot the next digit goes into, or -1 when complete. */
 export const activeIndex = (slots: Slot[]) => slots.findIndex((s) => s.status === 'empty');
 
-/** Slots that will be (re)checked: everything not already locked. */
-export const indexesToCheck = (slots: Slot[]) =>
-  slots.map((s, i) => (isLocked(s) ? -1 : i)).filter((i) => i >= 0);
 
 export const isComplete = (slots: Slot[]) => slots.every((s) => s.status !== 'empty');
 
@@ -94,12 +90,12 @@ export function otpReducer(state: OtpState, ev: OtpEvent): OtpState {
     }
 
     case 'START_CHECK':
-      return { ...state, phase: 'checking', bubble: null, attempts: state.attempts + 1 };
+      return { ...state, phase: 'checking', bubble: false, attempts: state.attempts + 1 };
 
     case 'MARK_PENDING':
       return {
         ...state,
-        slots: state.slots.map((s) => (isLocked(s) ? s : { ...s, status: 'pending' })),
+        slots: state.slots.map((s) => ({ ...s, status: 'pending' })),
       };
 
     case 'REVEAL':
@@ -109,21 +105,20 @@ export function otpReducer(state: OtpState, ev: OtpEvent): OtpState {
       };
 
     case 'CHECK_FAILED': {
-      const wrong = state.slots.map((s, i) => (s.status === 'wrong' ? i + 1 : -1)).filter((i) => i > 0);
+      // A wrong code is wrong as a whole: every slot clears and the user types it again from the start
       const lives = state.lives - 1;
-      // Out of lives: the old code is void, so even the greens are cleared
-      if (lives <= 0) return { ...state, phase: 'gameover', lives: 0, bubble: null, slots: emptySlots() };
+      if (lives <= 0) return { ...state, phase: 'gameover', lives: 0, bubble: false, slots: emptySlots() };
       return {
         ...state,
         phase: 'failed',
         lives,
-        bubble: wrong,
-        slots: state.slots.map((s) => (s.status === 'wrong' ? { digit: '', status: 'empty' } : s)),
+        bubble: true,
+        slots: emptySlots(),
       };
     }
 
     case 'BEGIN_MERGE':
-      return { ...state, phase: 'merging', bubble: null };
+      return { ...state, phase: 'merging', bubble: false };
 
     case 'VERIFIED':
       return { ...state, phase: 'verified' };
@@ -145,5 +140,4 @@ export function otpReducer(state: OtpState, ev: OtpEvent): OtpState {
   }
 }
 
-const WORDS = ['Zero', 'One', 'Two', 'Three', 'All four'];
-export const bubbleTitle = (n: number) => `${WORDS[n] ?? n} ${n === 1 ? 'is' : 'are'} off!`;
+export const livesText = (n: number) => `${n} ${n === 1 ? 'life' : 'lives'} left`;

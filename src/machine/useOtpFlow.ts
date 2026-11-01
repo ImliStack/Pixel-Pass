@@ -1,13 +1,21 @@
 import { animate, useMotionValue } from 'framer-motion';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { verifyDigits } from '../lib/verify';
+import { verifyCode } from '../lib/verify';
 import { sfx } from '../lib/sound';
-import { activeIndex, bubbleTitle, canType, indexesToCheck, initialState, isComplete, otpReducer } from './otpMachine';
+import { canType, initialState, isComplete, livesText, otpReducer } from './otpMachine';
 
 export type Pose = 'stand' | 'runA' | 'runB' | 'jump';
 export type MergeStep = 'none' | 'stack' | 'block' | 'green';
 export type CoinFx = { id: number; x: number; y: number };
 export type DustFx = { id: number; x: number };
+export type DebrisFx = { id: number; x: number };
+
+/** Finale positions shared by the director and the Stage: castle near the right, flagpole just before it. */
+export const POLE_H = 100;
+export const finaleLayout = (stageWidth: number) => {
+  const castleX = stageWidth / 2 + Math.min(stageWidth / 2 - 62, 190);
+  return { castleX, flagX: castleX - 34 };
+};
 
 // Scene metrics (px) — keep in sync with tokens.css / Stage layout
 export const HERO_W = 36;
@@ -20,7 +28,6 @@ const SKIP_SPEED = 0.12; // time multiplier after pressing Skip
 const REDUCED_SPEED = 0.06; // prefers-reduced-motion: near-instant
 
 const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-const listWords = (ns: number[]) => (ns.length < 2 ? ns.join('') : `${ns.slice(0, -1).join(', ')} and ${ns[ns.length - 1]}`);
 
 class Cancelled extends Error {}
 
@@ -40,7 +47,9 @@ export function useOtpFlow() {
   const [mergeBump, setMergeBump] = useState(0);
   const [dust, setDust] = useState<DustFx[]>([]);
   const [announce, setAnnounce] = useState('');
-  const [finale, setFinale] = useState({ castle: false, royal: false, heart: false, toast: false });
+  const [finale, setFinale] = useState({ castle: false, flag: false, flagDown: false, royal: false, heart: false, toast: false });
+  const [debris, setDebris] = useState<DebrisFx[]>([]);
+  const [coinCount, setCoinCount] = useState(0);
 
   const token = useRef(0);
   const busy = useRef(false);
@@ -124,38 +133,43 @@ export function useOtpFlow() {
     try {
       dispatch({ type: 'START_CHECK' });
       setAnnounce('Checking your code.');
-      const idxs = indexesToCheck(state.slots);
-      const results = await verifyDigits(state.slots.map((s) => s.digit));
+      // One answer for the whole code; each bump reveals that same answer (no per-digit hints)
+      const ok = await verifyCode(state.slots.map((s) => s.digit));
       guard(t);
       await wait(120, t);
       dispatch({ type: 'MARK_PENDING' });
       await wait(220, t);
 
-      for (const i of idxs) {
+      for (let i = 0; i < state.slots.length; i++) {
         await runTo(slotCenterX(i), t);
         await jump(t, () => {
           sfx.bump();
           setBumps((b) => b.map((n, k) => (k === i ? n + 1 : n)));
           popCoin(slotCenterX(i) + HERO_W / 2, 0);
-          if (results[i]) sfx.coin();
+          setCoinCount((n) => n + 1);
+          if (ok) sfx.coin();
           else sfx.wrong();
-          dispatch({ type: 'REVEAL', index: i, ok: results[i] });
+          dispatch({ type: 'REVEAL', index: i, ok });
         });
         await wait(70, t);
       }
 
-      if (results.every(Boolean)) {
+      if (ok) {
         await runMerge(t);
       } else {
-        await wait(420, t);
-        const wrong = results.map((ok, i) => (ok ? -1 : i + 1)).filter((n) => n > 0);
+        await wait(380, t);
+        // The wrong blocks crack and fall, then the empty slots come back for a full retype
+        sfx.crumble();
+        setDebris(state.slots.map((_, i) => ({ id: Math.random(), x: slotCenterX(i) + HERO_W / 2 })));
+        setTimeout(() => setDebris([]), 1100);
+        await wait(260, t);
         const livesLeft = state.lives - 1;
         if (livesLeft <= 0) {
           sfx.gameOver();
-          setAnnounce(`${bubbleTitle(wrong.length)} No lives left. Game over: a new code has been sent.`);
+          setAnnounce('Wrong code. No lives left. Game over: a new code has been sent.');
         } else {
           sfx.fail();
-          setAnnounce(`${bubbleTitle(wrong.length)} Fix digit${wrong.length > 1 ? 's' : ''} ${listWords(wrong)}. ${livesLeft} ${livesLeft === 1 ? 'life' : 'lives'} left.`);
+          setAnnounce(`Wrong code. Type all 4 digits again. ${livesText(livesLeft)}.`);
         }
         dispatch({ type: 'CHECK_FAILED' });
       }
@@ -180,6 +194,7 @@ export function useOtpFlow() {
       sfx.bump();
       setMergeBump((n) => n + 1);
       setMergeStep('green');
+      setCoinCount((n) => n + 1);
       sfx.coin();
     });
     await wait(260, t);
@@ -188,8 +203,22 @@ export function useOtpFlow() {
     sfx.success();
     await wait(650, t);
 
-    // finale: castle, royal walks out, heart, toast
-    setFinale((f) => ({ ...f, castle: true }));
+    // finale: flagpole + castle slide in, hero grabs the pole and slides down, then royal, heart, toast
+    setFinale((f) => ({ ...f, castle: true, flag: true }));
+    await wait(450, t);
+    const { flagX } = finaleLayout(stageWidth());
+    await runTo(flagX - HERO_W + 6, t);
+    setPose('jump');
+    sfx.jump();
+    await animate(heroY, -(POLE_H - HERO_H - 6), { duration: dur(0.22), ease: 'easeOut' });
+    guard(t);
+    setFinale((f) => ({ ...f, flagDown: true }));
+    sfx.flag();
+    await animate(heroY, 0, { duration: dur(0.6), ease: 'linear' });
+    guard(t);
+    puffDust(heroX.get() + HERO_W / 2);
+    setPose('stand');
+    await wait(250, t);
     await runTo(center - 26, t);
     setFacing(1);
     await wait(380, t);
@@ -207,18 +236,8 @@ export function useOtpFlow() {
     if (canType(state.phase) && isComplete(state.slots) && !busy.current) void runCheck();
   }, [state.phase, state.slots, runCheck]);
 
-  // Anticipation: once typing starts, the hero walks under the slot that takes the next digit
-  const active = activeIndex(state.slots);
-  const typing = canType(state.phase) && state.slots.some((s) => s.status === 'filled' || s.status === 'correct');
-  useEffect(() => {
-    if (!typing || active < 0 || busy.current) return;
-    speed.current = prefersReducedMotion() ? REDUCED_SPEED : 1;
-    runTo(slotCenterX(active), token.current).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typing, active]);
-
   // Keep the idle hero next to the slots when the window resizes
-  const idle = state.phase === 'input' && state.attempts === 0 && !typing;
+  const idle = state.phase === 'input' && state.attempts === 0;
   useEffect(() => {
     const el = stageRef.current;
     if (!el || !idle) return;
@@ -248,9 +267,11 @@ export function useOtpFlow() {
     setBumps([0, 0, 0, 0]);
     setCoins([]);
     setDust([]);
+    setDebris([]);
+    if (event === 'RESET') setCoinCount(0);
     setAnnounce(event === 'CONTINUE' ? 'New code sent. You have 3 lives.' : '');
     setMergeStep('none');
-    setFinale({ castle: false, royal: false, heart: false, toast: false });
+    setFinale({ castle: false, flag: false, flagDown: false, royal: false, heart: false, toast: false });
     dispatch({ type: event });
   };
 
@@ -264,8 +285,6 @@ export function useOtpFlow() {
       if (!canType(state.phase)) return;
       sfx.type();
       dispatch({ type: 'TYPE', digit: d });
-      // little hop of excitement when a digit lands (only when standing still on the ground)
-      if (!busy.current && heroY.get() === 0 && !prefersReducedMotion()) void animate(heroY, [0, -7, 0], { duration: 0.2 });
     },
     paste: (text: string) => dispatch({ type: 'PASTE', text }),
     backspace: () => {
@@ -284,6 +303,6 @@ export function useOtpFlow() {
     skip,
     announce,
     refs: { stageRef, slotRefs },
-    scene: { heroX, heroY, pose, facing, bumps, coins, dust, mergeStep, mergeBump, finale },
+    scene: { heroX, heroY, pose, facing, bumps, coins, dust, debris, coinCount, mergeStep, mergeBump, finale },
   };
 }

@@ -160,3 +160,56 @@ export const heart: Grid = [
   '..RRR..',
   '...R...',
 ];
+
+// ---------- scenery (soft colours so it stays behind the action) ----------
+export const sceneryPalette: Palette = {
+  W: '#ffffff',
+  w: '#e6e1d6', // cloud shade
+  G: '#cfe3b4', // hill
+  g: '#b5d197', // hill shade / outline
+  D: '#9cc27c', // hill spots
+  B: '#a8d08a', // bush
+  b: '#8dbd6e', // bush shade
+};
+
+export const cloud: Grid = [
+  '......WWWW......',
+  '....WWWWWWWW....',
+  '..WWWWWWWWWWWW..',
+  '.WWWWWWWWWWWWWW.',
+  'WWWWWWWWWWWWWWWW',
+  'WWWWWWWWWWWWWWWW',
+  '.wwwwwwwwwwwwww.',
+];
+
+export const hill: Grid = [
+  '..........gggggggg..........',
+  '.......gggGGGGGGGGggg.......',
+  '.....ggGGGGGGGGGGGGGGgg.....',
+  '....gGGGGGDGGGGGGGGGGGGg....',
+  '...gGGGGGGGGGGGGGDGGGGGGg...',
+  '..gGGGGGGGGGGGGGGGGGGGGGGg..',
+  '.gGGGGDGGGGGGGGGGGGGGGGGGGg.',
+  '.gGGGGGGGGGGGGDGGGGGGGGGGGg.',
+  'gGGGGGGGGGGGGGGGGGGGGGDGGGGg',
+  'gGGGGGGGGGGGGGGGGGGGGGGGGGGg',
+];
+
+export const bush: Grid = [
+  '...bBBb....bBBb.....',
+  '..bBBBBb..bBBBBb.bb.',
+  '.bBBBBBBbbBBBBBBbBBb',
+  'bBBBBBBBBBBBBBBBBBBB',
+  'bbbbbbbbbbbbbbbbbbbb',
+];
+
+// ---------- finish flag ----------
+export const flagPalette: Palette = { F: '#1fa25c', f: '#158249', W: '#ffffff' };
+export const flag: Grid = [
+  'FFFFFFFFFFF.',
+  'FFFFFFWFFF..',
+  'FFFFFWWWFF..',
+  'FFFFFFWFFF..',
+  'fFFFFFFFF...',
+  'ffffffff....',
+];

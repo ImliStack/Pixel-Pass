@@ -57,5 +57,7 @@ export const sfx = {
       { f: 494, d: 0.14 }, { f: 466, d: 0.14 }, { f: 440, d: 0.14 },
       { f: 415, d: 0.18 }, { f: 330, d: 0.12, type: 'triangle' }, { f: 165, d: 0.4, type: 'triangle' },
     ]),
+  crumble: () => play([{ f: 180, d: 0.06, type: 'sawtooth', gain: 0.05 }, { f: 120, d: 0.08, type: 'sawtooth', gain: 0.05 }, { f: 90, d: 0.12, type: 'sawtooth', gain: 0.04 }]),
+  flag: () => play([{ f: 1047, d: 0.6, slideTo: 330, type: 'triangle', gain: 0.05 }]),
   heart: () => play([{ f: 1175, d: 0.08, type: 'triangle' }, { f: 1568, d: 0.2, type: 'triangle' }]),
 };

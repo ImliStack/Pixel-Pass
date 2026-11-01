@@ -1,5 +1,5 @@
-// Record the README demo: desktop + mobile runs of the full flow (wrong code → retry → verified),
-// with Playwright recordVideo against a local Vite server, then encode MP4 / GIF and screenshots via ffmpeg.
+// Record the README demo: desktop + mobile runs of the full flow (wrong code → full retype → verified),
+// via Chrome's screencast against a local Vite server, then encode MP4 / GIF and screenshots via ffmpeg.
 // Usage: npm run demo   (needs Google Chrome and ffmpeg)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -33,6 +33,8 @@ try {
     const size = run.viewport;
     const context = await browser.newContext({ viewport: size, deviceScaleFactor: run.scale, isMobile: run.isMobile, hasTouch: run.isMobile });
     const page = await context.newPage();
+    // phone run: reserve the iPhone status-bar / Dynamic Island area so the framed video looks real
+    if (run.isMobile) await page.addInitScript(() => document.documentElement.style.setProperty('--demo-safe-top', '47px'));
 
     // Chrome's own screencast (CDP) instead of Playwright recordVideo: no extra ffmpeg download, and full-DPR frames.
     const frameDir = path.join(out, `${run.name}-frames`);
@@ -65,7 +67,7 @@ try {
     await shot('retry');
 
     await page.waitForTimeout(600);
-    await type('985');
+    await type('1985');
     await page.waitForSelector('.check-block', { timeout: 10000 });
     await page.waitForTimeout(300);
     await shot('merge');
@@ -90,10 +92,11 @@ try {
   // Screenshot-only pass: spend all three lives (Skip fast-forwards each check) to capture Game over
   const context = await browser.newContext({ viewport: runs[1].viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const page = await context.newPage();
+  await page.addInitScript(() => document.documentElement.style.setProperty('--demo-safe-top', '47px'));
   await page.goto(base);
   await page.waitForSelector('.slot');
   await page.click('.slots-row');
-  for (const [i, code] of ['1234', '222', '333'].entries()) {
+  for (const [i, code] of ['1234', '2222', '3333'].entries()) {
     await page.keyboard.type(code);
     await page.click('.skip');
     await page.waitForFunction((n) => document.querySelectorAll('.life--lost').length === n, i + 1, { timeout: 8000 });

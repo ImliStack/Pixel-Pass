@@ -4,7 +4,8 @@
   z-index: 5;
   display: flex;
   justify-content: space-between;
-  padding: calc(env(safe-area-inset-top) + 18px) 18px 0;
+  /* --demo-safe-top lets the recorder mimic an iPhone notch; real devices use env() */
+  padding: calc(max(env(safe-area-inset-top), var(--demo-safe-top, 0px)) + 18px) 18px 0;
 }
 .icon-btn {
   width: 38px;
@@ -382,3 +383,58 @@
 }
 .slots-row--focused .slot--active { outline: 3px solid rgba(31, 162, 92, 0.35); outline-offset: 3px; }
 button:focus-visible, a:focus-visible { outline: 3px solid rgba(31, 162, 92, 0.55); outline-offset: 2px; }
+
+/* ---------- scenery ---------- */
+.stage { isolation: isolate; }
+.scenery { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.scenery > span { position: absolute; line-height: 0; }
+.cloud { opacity: 0.95; animation: drift 26s ease-in-out infinite alternate; }
+.cloud--a { top: -6px; left: 4%; }
+.cloud--b { top: 20px; right: 5%; animation-duration: 34s; animation-delay: -8s; }
+.hill--a { bottom: 16px; left: 2%; }
+.hill--b { bottom: 16px; right: 18%; }
+.bush--a { bottom: 16px; left: 30%; }
+.bush--b { bottom: 16px; right: 4%; }
+@keyframes drift { from { transform: translateX(-14px); } to { transform: translateX(18px); } }
+@media (max-width: 520px) {
+  .cloud--a { left: -14px; }
+  .cloud--b { right: -10px; top: 26px; }
+  .hill--b { right: -20px; }
+  .bush--a { left: 22%; }
+}
+
+/* ---------- brick debris ---------- */
+.debris {
+  position: absolute;
+  width: 10px;
+  height: 8px;
+  background: #c8582a;
+  box-shadow: inset 0 2px 0 #e27a48, inset 0 -2px 0 #8a3a17;
+  z-index: 5;
+}
+
+/* ---------- finish flag ---------- */
+.flagpole {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(90deg, #8fa69a, #c9d6cf 50%, #8fa69a);
+  z-index: 1;
+}
+.flagpole::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold-400);
+  border: 2px solid var(--gold-700);
+}
+.flag { position: absolute; top: 0; right: 4px; line-height: 0; }
+
+/* ---------- HUD: hearts + coins ---------- */
+.hud { display: flex; align-items: center; gap: 14px; }
+.coin-count { display: flex; align-items: center; gap: 6px; font-family: var(--font-pixel); font-size: 15px; font-weight: 700; color: var(--gold-ink); }
+.coin--icon { position: static; display: inline-block; width: 11px; height: 16px; }

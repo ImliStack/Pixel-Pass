@@ -8,7 +8,6 @@ import { CheckBlock } from './CheckBlock';
 type Props = {
   slots: Slot[];
   phase: Phase;
-  retry: number[] | null; // 1-based indexes flagged in the last failed attempt
   bumps: number[];
   mergeStep: MergeStep;
   mergeBump: number;
@@ -17,7 +16,7 @@ type Props = {
   onFocus: () => void;
 };
 
-export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slotRefs, focused, onFocus }: Props) {
+export function OtpSlots({ slots, phase, bumps, mergeStep, mergeBump, slotRefs, focused, onFocus }: Props) {
   const active = canType(phase) ? activeIndex(slots) : -1;
 
   if (phase === 'verified') {
@@ -53,12 +52,10 @@ export function OtpSlots({ slots, phase, retry, bumps, mergeStep, mergeBump, slo
     // Visual only: screen readers get the hidden input plus the live announcements
     <div className={`slots-row${focused ? ' slots-row--focused' : ''}`} onClick={onFocus} aria-hidden="true">
       {slots.map((s, i) => {
-        const retryHint = phase === 'failed' && s.status === 'empty' && retry?.includes(i + 1);
         const cls = [
           'slot',
           `slot--${s.status}`,
           i === active ? 'slot--active' : '',
-          retryHint ? 'slot--retry' : '',
         ].join(' ');
         return (
           <motion.div

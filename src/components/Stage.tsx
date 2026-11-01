@@ -1,10 +1,10 @@
 import { AnimatePresence, motion, useTransform, type MotionValue } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { PixelSprite } from '../sprites/PixelSprite';
-import { castle, castlePalette, heart, heartPalette, hero, heroPalette, royal, royalPalette } from '../sprites/data';
-import type { CoinFx, DustFx, Pose } from '../machine/useOtpFlow';
-import { HERO_H, HERO_W, SKY_H } from '../machine/useOtpFlow';
-import { bubbleTitle } from '../machine/otpMachine';
+import { bush, castle, castlePalette, cloud, flag, flagPalette, heart, heartPalette, hero, heroPalette, hill, royal, royalPalette, sceneryPalette } from '../sprites/data';
+import type { CoinFx, DebrisFx, DustFx, Pose } from '../machine/useOtpFlow';
+import { HERO_H, HERO_W, POLE_H, SKY_H, finaleLayout } from '../machine/useOtpFlow';
+import { MAX_LIVES } from '../machine/otpMachine';
 
 const BUBBLE_W = 190;
 // Idle blink: the standing frame with the eye pixels painted over in skin colour
@@ -17,22 +17,37 @@ type Props = {
   facing: 1 | -1;
   coins: CoinFx[];
   dust: DustFx[];
-  bubble: number[] | null;
-  finale: { castle: boolean; royal: boolean; heart: boolean };
+  debris: DebrisFx[];
+  bubble: boolean;
+  lives: number;
+  finale: { castle: boolean; flag: boolean; flagDown: boolean; royal: boolean; heart: boolean };
   stageWidth: number;
 };
 
 /** The sky between the slots and the ground, plus the ground itself. */
-export function Scene({ heroX, heroY, pose, facing, coins, dust, bubble, finale, stageWidth }: Props) {
+export function Scene({ heroX, heroY, pose, facing, coins, dust, debris, bubble, lives, finale, stageWidth }: Props) {
   // The speech bubble rides above the hero, clamped inside the stage
   const bubbleX = useTransform(heroX, (x) => Math.max(10, Math.min(stageWidth - BUBBLE_W - 10, x + HERO_W - BUBBLE_W + 14)));
   const blinking = useBlink(pose === 'stand');
   const center = stageWidth / 2;
   // Castle sits at the right edge on phones, but stays near the action on wide screens
-  const castleX = center + Math.min(stageWidth / 2 - 62, 190);
+  const { castleX, flagX } = finaleLayout(stageWidth);
   return (
     <>
+      <Scenery />
       <div className="sky" style={{ height: SKY_H }}>
+        {debris.map((d) =>
+          [-15, -5, 5, 15].map((dx, k) => (
+            <motion.span
+              key={`${d.id}${k}`}
+              className="debris"
+              style={{ left: d.x - 5 + dx * 0.6, top: -36 + (k % 2) * 12 }}
+              initial={{ x: 0, y: 0, rotate: 0, opacity: 1 }}
+              animate={{ x: dx * 2.2, y: [0, -26 - (k % 2) * 10, 120], rotate: dx * 14, opacity: [1, 1, 0] }}
+              transition={{ duration: 0.85, ease: [0.3, 0, 0.8, 1], times: [0, 0.3, 1] }}
+            />
+          )),
+        )}
         {coins.map((c) => (
           <motion.span
             key={c.id}
@@ -45,7 +60,7 @@ export function Scene({ heroX, heroY, pose, facing, coins, dust, bubble, finale,
         ))}
 
         <AnimatePresence>
-          {bubble && bubble.length > 0 && (
+          {bubble && (
             <motion.div
               className="bubble"
               style={{ left: bubbleX, width: BUBBLE_W }}
@@ -54,15 +69,9 @@ export function Scene({ heroX, heroY, pose, facing, coins, dust, bubble, finale,
               exit={{ opacity: 0, y: 6 }}
               transition={{ type: 'spring', stiffness: 420, damping: 24 }}
             >
-              <strong>{bubbleTitle(bubble.length)}</strong>
+              <strong>Wrong code!</strong>
               <span className="bubble-fix">
-                Fix{' '}
-                {bubble.map((n, i) => (
-                  <span key={n}>
-                    <b className="chip-red">{n}</b>
-                    {i < bubble.length - 2 ? ', ' : i === bubble.length - 2 ? ' and ' : ''}
-                  </span>
-                ))}
+                Type all 4 again · <b className="chip-red">♥ {lives}/{MAX_LIVES}</b>
               </span>
             </motion.div>
           )}
@@ -86,6 +95,25 @@ export function Scene({ heroX, heroY, pose, facing, coins, dust, bubble, finale,
         )}
 
         <AnimatePresence>
+          {finale.flag && (
+            <motion.div
+              key="flag"
+              className="flagpole"
+              style={{ left: flagX, height: POLE_H }}
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
+              <motion.span
+                className="flag"
+                initial={false}
+                animate={{ y: finale.flagDown ? POLE_H - 30 : 8 }}
+                transition={{ duration: 0.6, ease: 'linear' }}
+              >
+                <PixelSprite grid={flag} palette={flagPalette} px={3} flip />
+              </motion.span>
+            </motion.div>
+          )}
           {finale.castle && (
             <motion.div
               key="castle"
@@ -147,4 +175,18 @@ function useBlink(enabled: boolean) {
     return () => clearTimeout(to);
   }, [enabled]);
   return blink;
+}
+
+/** Soft background scenery: drifting clouds, two hills and a couple of bushes. Never animates near the slots. */
+function Scenery() {
+  return (
+    <div className="scenery" aria-hidden="true">
+      <span className="cloud cloud--a"><PixelSprite grid={cloud} palette={sceneryPalette} px={4} /></span>
+      <span className="cloud cloud--b"><PixelSprite grid={cloud} palette={sceneryPalette} px={3} /></span>
+      <span className="hill hill--a"><PixelSprite grid={hill} palette={sceneryPalette} px={4} /></span>
+      <span className="hill hill--b"><PixelSprite grid={hill} palette={sceneryPalette} px={3} /></span>
+      <span className="bush bush--a"><PixelSprite grid={bush} palette={sceneryPalette} px={3} /></span>
+      <span className="bush bush--b"><PixelSprite grid={bush} palette={sceneryPalette} px={2} /></span>
+    </div>
+  );
 }

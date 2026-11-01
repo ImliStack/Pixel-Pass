@@ -19,14 +19,6 @@ export default function App() {
   }, [scene.finale.toast]);
   const [muted, setMutedState] = useState(false);
   const [stageWidth, setStageWidth] = useState(390);
-  // Remember the slots flagged on the last failure so empty retry slots keep a red hint
-  const [retry, setRetry] = useState<number[] | null>(null);
-
-  useEffect(() => {
-    if (state.bubble) setRetry(state.bubble);
-    if (state.phase === 'input') setRetry(null);
-  }, [state.bubble, state.phase]);
-
   useEffect(() => {
     const el = refs.stageRef.current;
     if (!el) return;
@@ -47,7 +39,7 @@ export default function App() {
     <div className="device" onClick={focus}>
       <Header
         muted={muted}
-        lives={!verified && <Lives lives={state.lives} max={MAX_LIVES} />}
+        lives={!verified && <Lives lives={state.lives} max={MAX_LIVES} coins={scene.coinCount} />}
         onClose={reset}
         onToggleSound={() => {
           setMuted(!muted);
@@ -95,7 +87,6 @@ export default function App() {
           <OtpSlots
             slots={state.slots}
             phase={state.phase}
-            retry={retry}
             bumps={scene.bumps}
             mergeStep={scene.mergeStep}
             mergeBump={scene.mergeBump}
@@ -110,7 +101,9 @@ export default function App() {
             facing={scene.facing}
             coins={scene.coins}
             dust={scene.dust}
+            debris={scene.debris}
             bubble={state.bubble}
+            lives={state.lives}
             finale={scene.finale}
             stageWidth={stageWidth}
           />

@@ -54,8 +54,9 @@ export function Credit() {
 }
 
 /** Pixel hearts: one per remaining wrong attempt. */
-export function Lives({ lives, max }: { lives: number; max: number }) {
+export function Lives({ lives, max, coins }: { lives: number; max: number; coins: number }) {
   return (
+    <div className="hud">
     <div className="lives" role="img" aria-label={`${lives} of ${max} lives left`}>
       {Array.from({ length: max }, (_, i) => (
         <motion.span
@@ -68,6 +69,14 @@ export function Lives({ lives, max }: { lives: number; max: number }) {
         </motion.span>
       ))}
     </div>
+    {/* coin counter: ticks up with every bump */}
+    <div className="coin-count" role="img" aria-label={`${coins} coins`}>
+      <span className="coin coin--icon" />
+      <motion.span key={coins} initial={{ y: coins ? -6 : 0, scale: coins ? 1.3 : 1 }} animate={{ y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 18 }}>
+        × {String(coins).padStart(2, '0')}
+      </motion.span>
+    </div>
+    </div>
   );
 }
 
@@ -75,8 +84,8 @@ export function Heading({ phase, attempts }: { phase: Phase; attempts: number })
   const variant =
     phase === 'verified' ? 'ok' : phase === 'gameover' ? 'over' : phase === 'failed' || attempts > 1 ? 'close' : 'start';
   const copy = {
-    start: { title: 'Let’s verify your number', sub: [`We sent a 4-digit code to ${MASKED_PHONE}.`, 'It verifies on its own once entered.'] },
-    close: { title: 'So close!', sub: ['Greens are right and stay locked.', 'Retype the red ones.'] },
+    start: { title: 'Enter your code', sub: [`We texted a 4-digit code to ${MASKED_PHONE}.`, 'Type it in and we’ll check it for you.'] },
+    close: { title: 'Not quite', sub: ['That code didn’t match.', 'Type all 4 digits again.'] },
     ok: { title: 'Verified', sub: ['You’re in.'] },
     over: { title: 'Game over', sub: ['Out of lives, so that code expired.', 'We’ve sent you a fresh one.'] },
   }[variant];
