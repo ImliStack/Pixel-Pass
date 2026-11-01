@@ -125,17 +125,17 @@ Enter **1997** to verify, or anything else to see the retry flow.
 | `npm run demo` | Record desktop + phone runs → `docs/demo*.mp4`, `docs/demo*.gif`, `docs/screenshots/`, `public/og.jpg` |
 | `npm run deploy` | Build and deploy `dist/` to Cloudflare Workers static assets (`wrangler.toml`) |
 
-To use your own verification API, replace `verifyDigits()` in [`src/lib/verify.ts`](src/lib/verify.ts). It takes the four digits and returns which ones are right.
+To use your own verification API, replace `verifyCode()` in [`src/lib/verify.ts`](src/lib/verify.ts). It takes the four digits and returns `true` or `false` for the whole code.
 
 ## ✦ How it works
 
-1. **State machine.** [`otpMachine.ts`](src/machine/otpMachine.ts) is a pure reducer — phases `input → checking → failed | merging → verified` and events like `TYPE`, `REVEAL`, `CHECK_FAILED`. No timers or DOM, so it ports straight to a Flutter Cubit.
+1. **State machine.** [`otpMachine.ts`](src/machine/otpMachine.ts) is a pure reducer — phases `input → checking → failed | merging → verified` and events like `TYPE`, `REVEAL`, `CHECK_FAILED`. No timers or DOM.
 2. **Director.** [`useOtpFlow.ts`](src/machine/useOtpFlow.ts) runs the timeline: it measures each slot's position, runs the hero there, jumps, and dispatches `REVEAL` at the top of the jump. Every step awaits a cancellable token, so the close button stops any animation mid-flight.
 3. **Sprites.** [`sprites/data.ts`](src/sprites/data.ts) holds the hero, princess, castle and heart as string grids plus palettes. [`PixelSprite`](src/sprites/PixelSprite.tsx) merges runs of one colour into SVG rects with `crispEdges`.
 4. **Motion.** Framer Motion springs for slot bumps, the merge, the check block and the toast; CSS for the cursor, dots and brick ground.
 5. **Sound.** [`sound.ts`](src/lib/sound.ts) plays square- and triangle-wave notes through WebAudio.
 
-The frame-by-frame breakdown of the reference video, timings and Flutter port notes are in [ARCHITECTURE.md](ARCHITECTURE.md).
+The frame-by-frame breakdown of the reference video and timings are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 > **Security note.** The check is whole-code only, so it leaks nothing about individual digits. Pair it with server-side rate limits and short code lifetimes; the 3 hearts mirror that on the client.
 
@@ -159,7 +159,6 @@ docs/                 logo, demo media, screenshots
 - [x] Lives, game over, random toasts, shake and dust, idle hero, skip, screen-reader narration, pixel game font
 - [ ] Haptics, shareable run card, resend power-up, night level (see [docs/UI-RESEARCH.md](docs/UI-RESEARCH.md))
 - [ ] More 90s-game-style auth screens: arcade login, character-select signup, password-strength blocks, "save your game?" logout
-- [ ] Flutter port using the same state machine and sprite grids
 - [ ] Haptics on mobile, optional background chiptune
 
 ## ✦ Credits

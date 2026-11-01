@@ -2,7 +2,7 @@
 
 A playful 4‑digit OTP verification screen. Entering the code plays out as a tiny
 pixel platformer: the hero bumps each digit block to reveal whether it's right.
-Built for web first (React + Vite + TS); structured so the logic ports 1:1 to Flutter.
+Built for the web with React, Vite and TypeScript.
 
 The table below is the original video's flow; the shipped app differs where marked.
 Reference frames from the source video live in `docs/reference/` locally (git-ignored: they show third-party characters).
@@ -23,9 +23,9 @@ Reference frames from the source video live in `docs/reference/` locally (git-ig
 
 ```
 src/
-  theme/tokens.css        Design tokens (colors, radii, shadows, fonts) — maps to Flutter ThemeData
+  theme/tokens.css        Design tokens (colors, radii, shadows, fonts)
   theme/global.css        Reset, dotted paper background, responsive sizes
-  machine/otpMachine.ts   PURE reducer: state + events. No timing, no DOM. (→ Flutter: Bloc/Cubit)
+  machine/otpMachine.ts   PURE reducer: state + events. No timing, no DOM.
   machine/useOtpFlow.ts   Director: runs the choreography timeline (hero moves, reveals, merge, finale)
   lib/verify.ts           Mock verification service (demo code 1997, latency). Swap for real API.
   lib/sound.ts            WebAudio chiptune SFX (type, jump, bump, coin, wrong, fanfare). Mute toggle.
@@ -58,12 +58,6 @@ When every editable slot is filled in `input`/`failed`, the director starts a ch
 - merge: 350 slide‑together → 250 hero run → jump → green → 300 morph to ✓
 - finale: castle 500 → princess walk 900 → heart 250 → toast + typewriter
 
-## Flutter port notes
-
-- `otpMachine.ts` → a `Cubit<OtpState>` with the same events; keep it pure.
-- Timeline → `AnimationController` sequence / `Future` chain mirroring `useOtpFlow`.
-- Sprites → `CustomPainter` reading the same string grids (copy `sprites/*.ts` data).
-- Tokens → `ThemeData` + `ThemeExtension` with the same names.
 
 ## Production note
 

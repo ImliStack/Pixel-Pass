@@ -6,7 +6,7 @@ All screens reuse what the OTP screen already has:
 
 - `sprites/` string-grid pixel art + `PixelSprite`
 - `lib/sound.ts` WebAudio SFX
-- a pure state machine per screen + a director hook for timing (ports to Flutter Cubits)
+- a pure state machine per screen + a director hook for timing
 - `theme/tokens.css`, the paper background, the credit line
 
 Routing: one Vite app, a tiny router, one route per screen (`/otp`, `/login`, `/signup`, …)
