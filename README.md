@@ -165,6 +165,6 @@ docs/                 logo, demo media, screenshots
 ## ✦ Credits
 
 - Built by [ImliStack](https://imlistack.com). Source: [github.com/ImliStack/Pixel-Pass](https://github.com/ImliStack/Pixel-Pass). A ⭐ helps.
-- UX inspired by a short reference video of a game-style OTP screen. All pixel art, sounds and code here are original; no sprites or audio from any game were used.
+- UI inspired by [Breeje Anadkat (@BreejeAnadkat)](https://x.com/BreejeAnadkat) and his game-style OTP concept. All pixel art, sounds and code here are original; no sprites or audio from any game were used.
 - Fonts: Archivo, Inter and JetBrains Mono via Fontsource; Geist Pixel by Vercel × basement.studio. All SIL Open Font License 1.1.
 - Built with React, Framer Motion, Vite and Playwright.
