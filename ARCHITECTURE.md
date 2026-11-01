@@ -15,7 +15,7 @@ Reference frames from the source video live in `docs/reference/` locally (git-ig
 | 3 | `failed` | Title → **So close!** / *Greens are right and stay locked. Retype the red ones.* Hero speech bubble: **Three are off!** *Fix ② ③ and ④*. Red slots fade to empty, cursor jumps to first red slot, resend timer returns. |
 | 4 | `checking` (retry) | Only the retyped slots are re-checked; locked greens are skipped. |
 | 5 | `merging` | All green → slots slide together into one gold `?` block, hero jumps and bumps it, it turns green. |
-| 6 | `verified` | Block morphs into a big green ✓ with a pulse ring and a coin burst. Title **Verified** / *You're in.* Castle slides in, princess walks out, heart pops, toast types out: **Took a few castles…** / *…but your code checks out!* (first-try variant: **Flawless run!**). |
+| 6 | `verified` | Block morphs into a big green ✓ with a pulse ring and a coin burst. Title **Verified** / *You're in.* Castle slides in, princess walks out, heart pops, toast types out a message by attempt count: **Perfect run!** / **Level clear!** / **Persistence pays!** (the video's own toast text is not reused). |
 
 ## Layers
 

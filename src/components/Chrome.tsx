@@ -118,9 +118,15 @@ function Dots() {
   );
 }
 
+// Success toast copy, by number of attempts
+const TOAST_COPY: [string, string][] = [
+  ['Perfect run!', 'First try, every block right.'],
+  ['Level clear!', 'One retry, and you’re in.'],
+  ['Persistence pays!', 'A few tries, but you made it.'],
+];
+
 export function Toast({ attempts }: { attempts: number }) {
-  const [title, sub] =
-    attempts <= 1 ? ['Flawless run!', 'First try — your code checks out!'] : ['Took a few castles…', '…but your code checks out!'];
+  const [title, sub] = TOAST_COPY[Math.min(Math.max(attempts, 1), TOAST_COPY.length) - 1];
   const t = useTypewriter(title, 0);
   const s = useTypewriter(sub, title.length * 35 + 150);
   return (

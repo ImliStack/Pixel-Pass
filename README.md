@@ -9,7 +9,7 @@
 Type the code and a pixel hero runs under each digit and bumps it like a block. A coin pops out and the
 block turns green if the digit is right, red if it's wrong. Greens lock in place, so you only retype the
 red ones. Get all four and the blocks merge into a big green check, a castle slides in and the toast
-says *"Took a few castles… but your code checks out!"*
+cheers you on: *"Level clear! One retry, and you're in."*
 
 ### [▶ Try the live demo](https://pixel-pass.imlistack.workers.dev) &nbsp;·&nbsp; demo code `1985`
 
@@ -25,7 +25,7 @@ says *"Took a few castles… but your code checks out!"*
 
 <br />
 
-<img src="docs/screenshots/desktop-verified.jpg" alt="Pixel Pass verified screen: green check block, the hero and the princess with a heart, a castle and the 'Took a few castles…' toast" width="100%" />
+<img src="docs/screenshots/desktop-verified.jpg" alt="Pixel Pass verified screen: green check block, the hero and the princess with a heart, a castle and the 'Level clear!' toast" width="100%" />
 
 </div>
 
@@ -41,7 +41,7 @@ says *"Took a few castles… but your code checks out!"*
   </tr>
   <tr>
     <td align="center"><sub><b>Phone</b> · 17 s · <a href="docs/demo-mobile.mp4">MP4</a></sub></td>
-    <td align="center"><sub><b>Desktop</b> · 20 s · <a href="docs/demo.mp4">MP4</a></sub></td>
+    <td align="center"><sub><b>Desktop</b> · 19 s · <a href="docs/demo.mp4">MP4</a></sub></td>
   </tr>
 </table>
 <sub>Recorded with <code>npm run demo</code>: wrong code <code>1234</code> → "Three are off!" → retype <code>985</code> → verified</sub>
@@ -71,7 +71,7 @@ says *"Took a few castles… but your code checks out!"*
 | `failed` | Title becomes *So close!*. A speech bubble over the hero says *Three are off! Fix ② ③ and ④*. Red slots clear (with a pink hint) and the cursor jumps to the first one. |
 | `checking` (retry) | Only the retyped slots are re-checked; locked greens are skipped. |
 | `merging` | All green: the four slots slide into one gold `?` block, the hero bumps it and it turns green. |
-| `verified` | *Verified · You're in.* A big ✓ with a pulse ring and a coin burst. A castle slides in, the princess walks out, a heart pops, and a toast types out: **Took a few castles…** (or **Flawless run!** on the first try). |
+| `verified` | *Verified · You're in.* A big ✓ with a pulse ring and a coin burst. A castle slides in, the princess walks out, a heart pops, and a toast types out a message that depends on how many tries it took: **Perfect run!** (first try), **Level clear!** (one retry) or **Persistence pays!** (more). |
 
 ## ✦ Features
 
