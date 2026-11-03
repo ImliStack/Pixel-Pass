@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Phase } from '../machine/otpMachine';
-import { DEMO_CODE, MASKED_PHONE } from '../lib/verify';
+import { DEMO_CODE, MASKED_EMAIL } from '../lib/verify';
 import { PixelSprite } from '../sprites/PixelSprite';
 import { heart, heartPalette, royal, royalPalette } from '../sprites/data';
 
@@ -53,11 +53,12 @@ export function Credit() {
   );
 }
 
-/** Pixel hearts: one per remaining wrong attempt. */
-export function Lives({ lives, max, coins }: { lives: number; max: number; coins: number }) {
+/** Pixel hearts, plus a coin counter when `coins` is given (the login screen shows lives only). */
+export function Lives({ lives, max, coins, label }: { lives: number; max: number; coins?: number; label?: boolean }) {
   return (
     <div className="hud">
     <div className="lives" role="img" aria-label={`${lives} of ${max} lives left`}>
+      {label && <span className="lives-label">LIVES</span>}
       {Array.from({ length: max }, (_, i) => (
         <motion.span
           key={i}
@@ -69,13 +70,15 @@ export function Lives({ lives, max, coins }: { lives: number; max: number; coins
         </motion.span>
       ))}
     </div>
-    {/* coin counter: ticks up with every bump */}
+    {coins !== undefined && (
+    /* coin counter: ticks up with every bump */
     <div className="coin-count" role="img" aria-label={`${coins} coins`}>
       <span className="coin coin--icon" />
       <motion.span key={coins} initial={{ y: coins ? -6 : 0, scale: coins ? 1.3 : 1 }} animate={{ y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 18 }}>
         × {String(coins).padStart(2, '0')}
       </motion.span>
     </div>
+    )}
     </div>
   );
 }
@@ -84,7 +87,7 @@ export function Heading({ phase, attempts }: { phase: Phase; attempts: number })
   const variant =
     phase === 'verified' ? 'ok' : phase === 'gameover' ? 'over' : phase === 'failed' || attempts > 1 ? 'close' : 'start';
   const copy = {
-    start: { title: 'Enter your code', sub: [`We texted a 4-digit code to ${MASKED_PHONE}.`, 'Type it in and we’ll check it for you.'] },
+    start: { title: 'Enter your code', sub: ['We emailed a 4-digit code to', `${MASKED_EMAIL}`, 'Type it in and we’ll check it for you.'] },
     close: { title: 'Not quite', sub: ['That code didn’t match.', 'Type all 4 digits again.'] },
     ok: { title: 'Verified', sub: ['You’re in.'] },
     over: { title: 'Game over', sub: ['Out of lives, so that code expired.', 'We’ve sent you a fresh one.'] },

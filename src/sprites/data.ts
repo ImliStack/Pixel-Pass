@@ -213,3 +213,37 @@ export const flag: Grid = [
   'fFFFFFFFF...',
   'ffffffff....',
 ];
+
+// ---------- login: castle guard ----------
+export const guardPalette: Palette = {
+  h: '#6b7682', // helmet outline
+  H: '#a7b2bd', // helmet steel
+  S: '#f6c59c',
+  K: '#1d1a17',
+  G: '#1fa25c', // tunic (ImliStack green)
+  g: '#158249',
+  y: '#ffd34d', // belt
+  B: '#5a3a22', // boots
+};
+
+const guardBody = [
+  '...GGGGGG...',
+  '..GGGgGGGG..',
+  '.SGGGgGGGGS.',
+  '.SGGGgGGGGS.',
+  '..GGGgGGGG..',
+  '..yyyyyyyy..',
+  '..GGG..GGG..',
+  '..hhh..hhh..',
+  '.BBBB..BBBB.',
+];
+const guardHead = (face: [string, string, string]) => ['....hhhh....', '...hHHHHh...', '..hHHHHHHh..', ...face, '..hhSSSShh..'];
+
+/** Eyes follow the email caret (left / centre / right); the visor drops for the password. */
+export const guard = {
+  left: [...guardHead(['..hSSSSSSh..', '..hKSSKSSh..', '..hSSSSSSh..']), ...guardBody],
+  center: [...guardHead(['..hSSSSSSh..', '..hSKSSKSh..', '..hSSSSSSh..']), ...guardBody],
+  right: [...guardHead(['..hSSSSSSh..', '..hSSKSSKh..', '..hSSSSSSh..']), ...guardBody],
+  visor: [...guardHead(['..hHHHHHHh..', '..hKKKKKKh..', '..hHHHHHHh..']), ...guardBody],
+  happy: [...guardHead(['..hSSSSSSh..', '..hSKSSKSh..', '..hSSKKSSh..']), ...guardBody],
+};

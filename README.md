@@ -4,14 +4,20 @@
 
 # Pixel Pass
 
-**A 4-digit OTP verification screen that plays like a tiny 8-bit platformer.**
+**Login and OTP screens that play like a tiny 8-bit platformer.**
 
-Type the code and a pixel hero runs under each digit and bumps it like a block. If the code is right,
+**World 1-1 · Login.** A pixel gate guard watches you type your email, lowers his visor while you type
+your password, and opens the castle gate when you get it right. Wrong password: "HALT!", one heart lost.
+Three wrong: the gate stays shut and a countdown runs.
+
+**World 1-2 · OTP.** Type the code and a pixel hero runs under each digit and bumps it like a block. If the code is right,
 every block turns green, they merge into a big check, the hero slides down a flagpole, fireworks pop over
 the castle and the toast cheers you on. If it's wrong, the blocks shatter into bricks and you type the whole
 code again, like any real OTP. Three wrong codes and it's game over: a fresh code is sent.
 
-### [▶ Try the live demo](https://pixel-pass.imlistack.workers.dev) &nbsp;·&nbsp; demo code `1997`
+### [▶ Try the live demo](https://pixel-pass.imlistack.workers.dev)
+
+Demo login `player1@pixelpass.dev` / `pixel97` (or tap **Use demo account**) &nbsp;·&nbsp; demo code `1997`
 
 [![React 18](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -21,15 +27,64 @@ code again, like any real OTP. Three wrong codes and it's game over: a fresh cod
 [![Sound: WebAudio](https://img.shields.io/badge/sound-WebAudio_synth-1fa25c?style=flat-square)](#-how-it-works)
 [![Live demo](https://img.shields.io/badge/live-workers.dev-f38020?style=flat-square&logo=cloudflare&logoColor=white)](https://pixel-pass.imlistack.workers.dev)
 
-[Demo](#-demo) · [The flow](#-the-flow) · [Features](#-features) · [Quick start](#-quick-start) · [How it works](#-how-it-works) · [Project structure](#-project-structure) · [Roadmap](#-roadmap)
+[Login](#-world-1-1--login) · [OTP demo](#-demo) · [The flow](#-the-flow) · [Features](#-features) · [Quick start](#-quick-start) · [How it works](#-how-it-works) · [Project structure](#-project-structure) · [Roadmap](#-roadmap)
 
 <br />
+
+<img src="docs/screenshots/login/desktop-password.jpg" alt="Pixel Pass login on desktop: big castle scene with the gate guard's visor down and an RPG dialogue box on the left, the sign-in form on the right" width="100%" />
+
+<br /><br />
 
 <img src="docs/screenshots/desktop-verified.jpg" alt="Pixel Pass verified screen: green check block, the hero and the princess with a heart, a castle and the 'Level clear!' toast" width="100%" />
 
 </div>
 
 <br />
+
+## ✦ World 1-1 · Login
+
+<div align="center">
+<table>
+  <tr>
+    <td width="34%" align="center"><img src="docs/login-mobile.gif" alt="Login on a phone: email, password with the guard's visor down, a wrong password gets HALT!, then the demo account opens the gate and leads to World 1-2" width="100%" /></td>
+    <td width="66%" align="center"><img src="docs/login-desktop.gif" alt="Login on desktop: split screen with the castle scene and dialogue on the left, form on the right, same flow into the OTP screen" width="100%" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Phone</b> · 16 s · <a href="docs/login-mobile.mp4">MP4</a></sub></td>
+    <td align="center"><sub><b>Desktop</b> · 15 s · <a href="docs/login-desktop.mp4">MP4</a></sub></td>
+  </tr>
+</table>
+<sub>Recorded with <code>npm run demo:login</code>: email → wrong password (HALT!) → demo account → gate opens → WORLD 1-2 → OTP</sub>
+</div>
+
+<table>
+  <tr>
+    <td width="16%"><img src="docs/screenshots/login/mobile-email.jpg" alt="Email: the guard's eyes follow the caret; dialogue asks for your email" /></td>
+    <td width="16%"><img src="docs/screenshots/login/mobile-password.jpg" alt="Password: the guard lowers his visor and promises not to peek" /></td>
+    <td width="16%"><img src="docs/screenshots/login/mobile-wrong.jpg" alt="Wrong password: HALT!, spear crossed, inline error, one heart lost" /></td>
+    <td width="16%"><img src="docs/screenshots/login/mobile-locked.jpg" alt="Locked: no hearts left, Try again in 0:28 in the button, Forgot password highlighted" /></td>
+    <td width="16%"><img src="docs/screenshots/login/mobile-welcome.jpg" alt="Welcome back: the gate is open and the hero walks in" /></td>
+    <td width="16%"><img src="docs/screenshots/login/mobile-world.jpg" alt="WORLD 1-2 card: verify your email" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Email</b><br />eyes follow the caret</sub></td>
+    <td align="center"><sub><b>Password</b><br />visor down, no peeking</sub></td>
+    <td align="center"><sub><b>Wrong</b><br />HALT! · −1 heart</sub></td>
+    <td align="center"><sub><b>Locked</b><br />30 s countdown</sub></td>
+    <td align="center"><sub><b>Welcome</b><br />gate opens</sub></td>
+    <td align="center"><sub><b>World 1-2</b><br />on to the OTP</sub></td>
+  </tr>
+</table>
+
+| Login state | What happens |
+|---|---|
+| Idle / email | A 90s RPG dialogue box: *GATE GUARD: "Halt, traveller! Who goes there? Your email, please."* His eyes follow your caret along the email field. |
+| Password | *"\*clank\* Visor down, I won't peek."* The visor drops while the password field has focus. A labelled **Show** button toggles visibility. |
+| Wrong | *"HALT! That's not on my list."* The spear crosses the gate and one heart is lost. The email stays, the password clears and gets focus, and an inline error reads *"Email or password is wrong. 2 tries left."* (never which one). |
+| Locked | Out of hearts: the button counts down *Try again in 0:29*, fields lock, and **Forgot password?** turns into a highlighted button. Hearts refill after 30 s. |
+| Success | *"Welcome back, PLAYER1! The gate is open."* The portcullis rises, the hero walks in, a **WORLD 1-2 · VERIFY YOUR EMAIL** card plays and the OTP screen opens at `/otp`. |
+
+Real login fields underneath: `autocomplete="username"` / `"current-password"`, paste allowed, so password managers work. The design research is in [docs/LOGIN-RESEARCH.md](docs/LOGIN-RESEARCH.md).
 
 ## ✦ Demo
 
@@ -59,7 +114,7 @@ code again, like any real OTP. Three wrong codes and it's game over: a fresh cod
 <img src="docs/screenshots/iphone/verified.png" width="24%" alt="Verified with flag and castle" />
 </div>
 
-> **Flow update:** the code is checked as a whole, like a real OTP. A wrong code shatters all four blocks and you retype everything; 3 wrong codes = game over and a fresh code. New: scenery, brick debris, a finish flag and a coin counter.
+<sub>The iPhone recording was made before the subtitle changed from a phone number to the masked email.</sub>
 
 ## ✦ The flow
 
@@ -82,7 +137,7 @@ code again, like any real OTP. Three wrong codes and it's game over: a fresh cod
 
 | Phase | What happens |
 |---|---|
-| `input` | *Enter your code*. Hearts and a coin counter sit in the header. Slots fill as you type and the active one blinks `_`; the hero stays still so nothing distracts you. Paste and SMS autofill (`autocomplete="one-time-code"`) work. A resend countdown runs below. |
+| `input` | *Enter your code*. Hearts and a coin counter sit in the header. Slots fill as you type and the active one blinks `_`; the hero stays still so nothing distracts you. Paste and one-time-code autofill (`autocomplete="one-time-code"`) work. The subtitle shows the masked email the code went to. A resend countdown runs below. |
 | `checking` | The 4th digit submits on its own. Footer shows *Checking ···* and a **Skip ▸▸** button that fast-forwards the animation. Slots turn into gold blocks; the hero runs under each one and jumps; the block bumps, a coin pops and it turns **green** or **red**; red blocks shake and flash. A puff of dust marks every landing. |
 | `failed` | Title becomes *Not quite*. Every block shatters into falling bricks, all four slots clear and the cursor returns to the first. A bubble says *Wrong code! Type all 4 again · ♥ 2/3* and one heart is lost. |
 | `gameover` | After 3 wrong codes: *Game over*. The code expires and **Continue ▸** starts again with a fresh code and full hearts. |
@@ -99,7 +154,7 @@ code again, like any real OTP. Three wrong codes and it's game over: a fresh cod
 - **Full-page and responsive**: phone, tablet and desktop. The brick ground runs edge to edge; the hero and castle stay near the action on wide screens.
 - **Chiptune sound effects** synthesised live with WebAudio (type, jump, bump, coin, wrong, fanfare, heart). No audio files. Mute toggle top-right.
 - **Original pixel art**, drawn from string grids into crisp SVG. No image files at all, so it stays sharp at any size.
-- **Real input handling**: one hidden native input catches typing, backspace, paste and iOS/Android SMS autofill.
+- **Real input handling**: one hidden native input catches typing, backspace, paste and one-time-code autofill (`autocomplete="one-time-code"`).
 - **Resend countdown**, demo code chip, close button to restart.
 - **Accessible**: screen readers hear each result ("Wrong code. Type all 4 digits again. 2 lives left."), a Skip button fast-forwards any check, `prefers-reduced-motion` makes it near-instant, and the active slot shows a focus ring.
 - **Type**: Archivo Expanded for headings, Inter for body, and **Geist Pixel** only for game text (chips, bubble, toast, `?` block). All fonts are self-hosted: no third-party requests.
@@ -122,7 +177,9 @@ Enter **1997** to verify, or anything else to see the retry flow.
 | `npm run dev` | Vite dev server on port 5178 |
 | `npm run build` | Type-check and build to `dist/` |
 | `npm run preview` | Serve the production build |
-| `npm run demo` | Record desktop + phone runs → `docs/demo*.mp4`, `docs/demo*.gif`, `docs/screenshots/`, `public/og.jpg` |
+| `npm run demo:login` | Record the login on phone + desktop → `docs/login-*.mp4`, `docs/login-*.gif`, `docs/screenshots/login/` |
+| `npm run frame` | Put the phone screenshots in an iPhone frame → `docs/screenshots/iphone/` |
+| `npm run demo` | Record the OTP screen on desktop + phone → `docs/demo*.mp4`, `docs/demo*.gif`, `docs/screenshots/`, `public/og.jpg` |
 | `npm run deploy` | Build and deploy `dist/` to Cloudflare Workers static assets (`wrangler.toml`) |
 
 To use your own verification API, replace `verifyCode()` in [`src/lib/verify.ts`](src/lib/verify.ts). It takes the four digits and returns `true` or `false` for the whole code.
@@ -143,6 +200,8 @@ The frame-by-frame breakdown of the reference video and timings are in [ARCHITEC
 
 ```
 src/theme/            tokens.css (colours, type, radii) · global.css (paper background, responsive sizes)
+src/Root.tsx          tiny router: / = login (World 1-1), /otp = OTP (World 1-2)
+src/login/            loginMachine.ts (pure state machine) · LoginScene.tsx (guard, gate, hero, dialogue) · LoginScreen.tsx · login.css
 src/machine/          otpMachine.ts (pure state machine) · useOtpFlow.ts (choreography + hero motion)
 src/components/       OtpSlots, CheckBlock, Stage (hero, coins, bubble, castle, princess, ground), Chrome (header, heading, footer, toast, credit)
 src/sprites/          pixel grids + PixelSprite renderer
@@ -154,11 +213,12 @@ docs/                 logo, demo media, screenshots
 ## ✦ Roadmap
 
 - [x] Web version matching the reference video, frame by frame
-- [x] Full-page responsive layout, sound, paste and SMS autofill
+- [x] Full-page responsive layout, sound, paste and one-time-code autofill
 - [x] Demo recorder, README media, Cloudflare deploy config
 - [x] Lives, game over, random toasts, shake and dust, idle hero, skip, screen-reader narration, pixel game font
 - [ ] Haptics, shareable run card, resend power-up, night level (see [docs/UI-RESEARCH.md](docs/UI-RESEARCH.md))
-- [ ] More 90s-game-style auth screens: arcade login, character-select signup, password-strength blocks, "save your game?" logout
+- [x] Login screen "Castle Gate" (World 1-1) leading into the OTP screen (World 1-2)
+- [ ] More 90s-game-style auth screens: character-select signup, password-strength blocks, "save your game?" logout
 - [ ] Haptics on mobile, optional background chiptune
 
 ## ✦ Credits

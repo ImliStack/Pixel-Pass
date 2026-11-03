@@ -47,7 +47,7 @@ export default function App() {
         }}
       />
 
-      {/* Hidden native input captures keyboard, paste and SMS autofill */}
+      {/* Hidden native input captures keyboard, paste and one-time-code autofill */}
       <input
         ref={inputRef}
         className="sr-input"

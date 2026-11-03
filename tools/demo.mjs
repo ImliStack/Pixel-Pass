@@ -50,7 +50,7 @@ try {
     const shot = (label) => page.screenshot({ path: path.join(shots, `${run.name}-${label}.jpg`), type: 'jpeg', quality: 88 });
     const type = async (text) => { for (const ch of text) { await page.keyboard.type(ch); await page.waitForTimeout(260); } };
 
-    await page.goto(base);
+    await page.goto(base + '/otp');
     if (run.isMobile) await page.addStyleTag({ content: ':root { --demo-safe-top: 47px; }' });
     await page.waitForSelector('.slot');
     await page.evaluate(() => document.fonts.ready);
@@ -92,7 +92,7 @@ try {
   // Screenshot-only pass: spend all three lives (Skip fast-forwards each check) to capture Game over
   const context = await browser.newContext({ viewport: runs[1].viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const page = await context.newPage();
-  await page.goto(base);
+  await page.goto(base + '/otp');
   await page.addStyleTag({ content: ':root { --demo-safe-top: 47px; }' });
   await page.waitForSelector('.slot');
   await page.click('.slots-row');

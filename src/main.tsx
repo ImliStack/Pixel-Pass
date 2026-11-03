@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import Root from './Root';
 // Self-hosted fonts (no third-party requests)
 import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource/inter/400.css';
@@ -14,6 +14,6 @@ import './components/components.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Root />
   </StrictMode>,
 );

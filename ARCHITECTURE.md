@@ -11,7 +11,7 @@ Reference frames from the source video live in `docs/reference/` locally (git-ig
 
 | # | Phase | What's on screen |
 |---|-------|------------------|
-| 1 | `input` | Title **Let's verify your number**, subtitle, 4 empty key-cap slots, hero idle on brick ground (left), `Didn't get it? Resend in 0:29`, `Demo code 1997`. Active slot shows a blinking `_`. |
+| 1 | `input` | Title **Let's verify your number** *(shipped: "Enter your code… We emailed a 4-digit code to p•••••1@pixelpass.dev")*, subtitle, 4 empty key-cap slots, hero idle on brick ground (left), `Didn't get it? Resend in 0:29`, `Demo code 1997`. Active slot shows a blinking `_`. |
 | 2 | `checking` | 4th digit auto-submits. Footer → `Checking ···`. Slots flip to gold **?‑blocks** (digit still visible). Hero runs under each block left→right and jumps; block bumps, a coin pops, block turns **green** (right) or **red** (wrong). |
 | 3 | `failed` | Title → **So close!** / *Greens are right and stay locked. Retype the red ones.* Hero speech bubble: **Three are off!** *Fix ② ③ and ④*. Red slots fade to empty, cursor jumps to first red slot, resend timer returns. |
 | 4 | `checking` (retry) | Only the retyped slots are re-checked; locked greens are skipped. |
