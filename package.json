@@ -31,7 +31,7 @@
   "engines": {
     "node": ">=18"
   },
-  "description": "A 4-digit OTP verification screen that plays like a tiny 8-bit platformer. By ImliStack.",
+  "description": "Login and OTP screens that play like a tiny 8-bit platformer. By ImliStack.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ImliStack/Pixel-Pass.git"
